@@ -1,0 +1,37 @@
+#!/usr/bin/ruby
+
+if ARGV.length == 0
+    puts "This is the ATK command! I'm glad to see you're using it.\nRunning it with no arguments will just get you this message :)"
+# if one argument, then act like grep
+else
+    case ARGV[0]
+        when 'install'
+            # first check the locally-stored core listing
+            # then check the locally-stored main listing
+            # then search github for the repo
+            
+            # once a package is found, save it locally and run it's installer
+        when 'uninstall'
+            # check to see if the package is installed, and check if it has an uninstaller
+        when 'new'
+            case ARGV[1]
+                when 'project'
+                    # create a folder with an info.yaml
+                    # ask the user what structure's they would like to integrate
+                when 'package'
+                    # ask the user what kind of package, installer or structure
+                when 'installer'
+                    # ask the user what they did to install it
+                        # just commands
+                        # programming logic
+                        # manual setup
+                    # repeat for each OS
+                when 'structure'
+                    # TODO: this is a future feature
+                    # structures will can have a
+                        # verifier (make sure the structe alread exists)
+                        # implementer (make the structure exist if it doesnt)
+            end
+    end
+    
+end

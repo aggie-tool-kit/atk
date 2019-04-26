@@ -1,0 +1,48 @@
+atk-settings:
+    global_commands:
+        "::" : true
+
+
+project:
+    for_mac_os: &settings
+        local_package_manager: 'npm'
+        dependencies:
+            - node
+            - git
+        structures:
+            - npm-package
+            - vs-code-package
+            - git-repo
+        project_commands: &commands
+            test: echo 'yup this test works'
+            start: node app.js
+            show_files: ls
+        
+        # caveats for a speficic sub-version
+        for_yosimite:
+            <<: *settings # this injects all the settings here
+            project_commands:
+                <<: *commands
+                test: 'this is specific to yosimite'
+    
+    for_linux_os:
+        <<: *settings # this injects all the settings here
+    
+    # caveats for a different OS
+    for_windows_os:
+        <<: *settings # this injects all the settings here
+        project_commands:
+            <<: *commands
+            show_files: dir
+
+atk_package:
+    unique_name: 'example'
+    installer: 'ruby installer.rb'
+    for_mac_os:
+        dependencies:
+            - xcode
+            - ruby@2.6
+    for_windows_os:
+        dependencies:
+            - gcc
+            - ruby@2.6
