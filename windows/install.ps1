@@ -1,3 +1,4 @@
+. "$PSScriptRoot\scoop_core.ps1"
 
 $scoopStatus = $false
 $proxyResponse = $false
@@ -75,6 +76,6 @@ if ($proxyResponse) {
 # TODO: Add check if Ruby is already installed
 
 # Install Ruby 2.6.3
-Invoke-Expression "scoop install ruby@2.6.3" # TODO: Need to verify this version is correct
+Invoke-Expression "scoop install ruby\@2.6.3" # TODO: Need to verify this version is correct
 
 # Start Ruby install script for Windows
