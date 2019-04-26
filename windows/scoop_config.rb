@@ -1,4 +1,4 @@
-scoopDir = ENV['SCOOP'] or '~/scoop'
+scoopDir = ENV['SCOOP'] or '#{Dir.home}/scoop'
 scoopGlobalDir = ENV['SCOOP_GLOBAL'] or '#{ENV["ProgramData"]}/scoop'
 
 def baseDir(global=false)
