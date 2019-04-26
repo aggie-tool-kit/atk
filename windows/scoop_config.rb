@@ -15,7 +15,7 @@ def appDir(appName, global=false)
     return '#{root}/#{appName}'
 end
 
-def installed(appName, global=nil) {
+def installed?(appName, global=nil) {
     if(global == nil) { return (installed(appName, true) or (installed (appName, false))) }
     # Dependencies of the format "bucket/dependency" install in a directory of form
     # "dependency". So we need to extract the bucket from the name and only give the app
