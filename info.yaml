@@ -23,7 +23,7 @@ atk-settings:
         # FOR[students]:
         # FOR[teaching-assistants]:
     
-    ! for_mac_os: &settings
+    (for_mac_os): &settings
         (local_package_managers): ['npm']
         (dependencies):
             - node
@@ -33,7 +33,8 @@ atk-settings:
             - vs-code-package
             - git-repo
         (project_commands): &commands
-            (run): !lang/ruby
+            # auto-insert the !lang/console if they dont put one
+            (run): !language/ruby
                 puts "hi"
             (stop): \`pkill node`
             (compile): gcc *.cpp
