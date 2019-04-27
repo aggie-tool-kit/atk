@@ -38,7 +38,41 @@ require 'safe_yaml'
 # 
 # info.yaml tools
 # 
+    # 
+    # Create loaders for ruby code literal and console code literal
+    # 
+        class RubyCode
+            def init_with(coder)
+                @value = coder.scalar
+            end
+            
+            def run
+                eval(@value)
+            end
+            
+            # def to_s
+            #     puts @value
+            # end
+        end
+        YAML.add_tag( '!lang/ruby', RubyCode )
+
+        class ConsoleCode
+            def init_with(coder)
+                @value = coder.scalar
+            end
+            
+            def run
+                `#{@value}`
+            end
+            
+            def to_s
+                puts @value
+            end
+        end
+        YAML.add_tag( '!lang/console', ConsoleCode )
+    # 
     # project info (specific to operating sytem)
+    # 
     # setting/getting values via an object (instead of opening/closing a file)
     class Info
         attr_accessor :data
@@ -47,10 +81,7 @@ require 'safe_yaml'
         end
         
         def [](element)
-            the_file          = File.open("./info.yaml")
-            file_content_copy = the_file.read
-            the_file.close
-            @data = YAML.load(file_content_copy, :safe => true)
+            @data = YAML.load_file("./info.yaml", :safe => true)
             if @data.is_a? Hash
                 if @data[ @OS[0] ]
                     @data = @data[ @OS[0] ]

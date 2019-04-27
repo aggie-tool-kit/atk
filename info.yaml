@@ -1,48 +1,71 @@
 atk-settings:
-    global_commands:
-        "::" : true
+    on_startup:
+        add_aliases:
+            "@" : "project"
+            "::" : "project"
+        add_variables:
+            "JAVA_VERSION" : "blah"
 
 
-project:
-    for_mac_os: &settings
-        local_package_manager: 'npm'
-        dependencies:
+(project):
+    name: The ATK Repo
+    description: Blah
+    
+    (using_atk_version): 1.0
+    (dependencies):
+        (run):
+        
+        # FOR[gov-production]:
+        # FOR[edu-production]:
+        # FOR[DEBUGGING]:
+        # FOR[PRODUCTION]:
+        # FOR[professors]:
+        # FOR[students]:
+        # FOR[teaching-assistants]:
+    
+    ! for_mac_os: &settings
+        (local_package_managers): ['npm']
+        (dependencies):
             - node
             - git
-        structures:
+        (structures):
             - npm-package
             - vs-code-package
             - git-repo
-        project_commands: &commands
-            test: echo 'yup this test works'
-            start: node app.js
-            show_files: ls
+        (project_commands): &commands
+            (run): !lang/ruby
+                puts "hi"
+            (stop): \`pkill node`
+            (compile): gcc *.cpp
+            (test): echo 'yup this test works'
         
         # caveats for a speficic sub-version
-        for_yosimite:
+        (for_yosemite):
             <<: *settings # this injects all the settings here
-            project_commands:
+            (project_commands):
                 <<: *commands
                 test: 'this is specific to yosimite'
     
-    for_linux_os:
+    (for_linux_os):
         <<: *settings # this injects all the settings here
     
     # caveats for a different OS
-    for_windows_os:
+    (for_windows_os):
         <<: *settings # this injects all the settings here
-        project_commands:
+        (project_commands):
             <<: *commands
             show_files: dir
 
 atk_package:
-    unique_name: 'example'
-    installer: 'ruby installer.rb'
+    unique_name: 'node'
+    dependencies: &reference_to_dependencies
+        - python
     for_mac_os:
-        dependencies:
-            - xcode
-            - ruby@2.6
+        installer: 'brew install node'
     for_windows_os:
-        dependencies:
-            - gcc
-            - ruby@2.6
+        installer: 'scoop install node'
+        dependencies: *reference_to_dependencies
+    for_linux_os:
+        installer: 'apt install nodejs'
+        for_arch:
+                installer: 'pacman -S node'
