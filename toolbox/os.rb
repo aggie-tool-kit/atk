@@ -45,7 +45,7 @@ os_heirarchy = {
 # 
 # Groups
 # 
-# the groups are the pratical side of the OS, they describe the OS rather than fit it prefectly into 
+# the groups are the pratical side of the OS, they describe the OS rather than fit it prefectly into a heirarchy
 module OS
     # TODO: have the version pick one of the verions in the os_heirarchy according to the current OS
     def version

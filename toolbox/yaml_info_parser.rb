@@ -69,6 +69,7 @@ class Info
             # then issue a warning, and give them a suggestion to the next-closest key
     # if there is no when(--context is 'developer'), then create an empty one
     # if there is no (put_new_dependencies_under), then create one with a default value of 'developer'
+    # if the path provided by (put_new_dependencies_under) is invalid, throw an error saying that
     
     def [](element)
         @data = YAML.load_file("./info.yaml", :safe => true)
