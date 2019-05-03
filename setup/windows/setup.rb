@@ -1,5 +1,5 @@
 # Continuation of the Windows installation of ATK
-require_relative '../package_managers.rb'
+require_relative '../../toolbox/package_managers'
 
 # Install sudo
 Scoop.install('sudo')

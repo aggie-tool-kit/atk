@@ -28,11 +28,20 @@ else
         when 'integrate'
             structure_name = ARGV[1]
             # use this to integrate a structure into the project
+            # TODO:
+            # get the context
+                # if there is a --context='something' command line option, then use that
+                # otherwise use the default(--context) speficied in the info.yaml
+                # re-iterate through the info.yaml (advanced_setup) keys
+                # find all of the "when(--context = 'something')" keys
+                # find the (dependencies) sub-key for them, create one if the key doesn't exist
+                # add the project and version to the 
         when 'add'
             package = ARGV[1]
             # check if there is an info.yaml
             # check if there is an local_package_manager in the info.yaml
-            # if there is 
+            # if there is only 1, then use it
+            # if there is more than one, ask which one the user wants to use
         when 'remove'
             package = ARGV[1]
             # check if there is an local_package_manager in the info.yaml
@@ -41,14 +50,8 @@ else
             # check if there is an local_package_manager in the info.yaml
             # if there is then use it to figure out which files to remove
         when 'run'
-            argument = ARGV[1]
-            if data.is_a? Hash
-                if data["project_commands"] != nil
-                    if data["project_commands"][argument] != nil
-                        system(data["project_commands"][argument])
-                    end
-                end
-            end
+            # extract the (project_commands) section from the info.yaml, 
+            # then find the command with the same name as ARGV[1] and run it
     end
     
 end

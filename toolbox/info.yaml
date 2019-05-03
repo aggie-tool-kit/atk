@@ -1,56 +1,47 @@
-# Global Settings (stored in home)
-atk-settings:
-    on_startup:
-        add_aliases:
-            "@" : "project"
-            "::" : "project"
-        add_variables:
-            "JAVA_VERSION" : "blah"
-
-
-# Project settings
+# Example of Project settings
 (using_atk_version): 1.0
 (project):
     name: The ATK Repo
     description: Blah
     homepage: www.blah.com
     
-    basic_info: &basic_info_reference
-        (project_commands): &project_commands_reference
+    basic_setup: &basic_setup_reference
+        (project_commands): &basic_commands
             # auto-insert the !lang/console if they dont put one
             run: !language/ruby
                 puts "hi"
             stop: \`pkill node`
             compile: gcc *.cpp
+        (environment_variables):
+            JAVA_VERSION: "8.9"
         (structures):
-            - npm-package
-            - vs-code-package
-            - git-repo
+            npm-package: v1.0.0
+            vs-code-package: v1.0.0
+            git-repo: v1.0.0
         (dependencies):
-            - node
-            - npm
-            - git
+            python3: v3.7.0
+            node: v11.11.0
+            npm: v6.7.0
+            git: v2.21.0
     
-    (advanced_settings):
+    (advanced_setup):
         (local_package_managers): ['npm', 'pip'] # by default the local package managers are always here
         (put_new_dependencies_under): [ '(project)', 'basic_info', '(dependencies)' ]
         default(--context): developing
-        default(--os): !eval/language/ruby require 'os'; OS
-        (environment_variables):
-            JAVA_VERSION: "8.9"
-        <<: *basic_info_reference # this injects all the (basic_info) here
+        <<: *basic_setup_reference # this injects all the (basic_setup) here
         when(--context is 'developing'):
             # caveats for a specific OS
             when(--os is 'windows'):
                 (project_commands):
-                    <<: *project_commands_reference 
+                    <<: *basic_commands 
                     show_files: dir # this is a custom command specific to windows
             when(--os is 'linux'):
                 # caveats for a specific OS sub-version
-                when(--os is 'linux.arch'):
+                when(--os is 'arch'):
                     (project_commands):
-                        <<: *project_commands_reference # this injects all the (project_commands) here
+                        <<: *basic_commands # this injects all the (project_commands) here
                         my_ip_address: "ip" # this is a custom command specific to arch linux
+                    
         # caveats for a different context
         when(--context is 'testing'):
             (environment_variables):
@@ -61,19 +52,3 @@ atk-settings:
             when(--os is 'windows'):
                 (environment_variables):
                     CMAKE_LIB: "C:\\testing"
-
-
-# Details for repo's that are going to be part of the ATK ecosystem
-atk_package:
-    unique_name: 'node'
-    dependencies: &reference_to_dependencies
-        - python
-    for_mac_os:
-        installer: 'brew install node'
-    for_windows_os:
-        installer: 'scoop install node'
-        dependencies: *reference_to_dependencies
-    for_linux_os:
-        installer: 'apt install nodejs'
-        for_arch:
-                installer: 'pacman -S node'
