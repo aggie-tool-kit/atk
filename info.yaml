@@ -1,3 +1,4 @@
+# Global Settings (stored in home)
 atk-settings:
     on_startup:
         add_aliases:
@@ -7,56 +8,64 @@ atk-settings:
             "JAVA_VERSION" : "blah"
 
 
+# Project settings
+(using_atk_version): 1.0
 (project):
     name: The ATK Repo
     description: Blah
+    homepage: www.blah.com
     
-    (using_atk_version): 1.0
-    (dependencies):
-        (run):
-        
-        # FOR[gov-production]:
-        # FOR[edu-production]:
-        # FOR[DEBUGGING]:
-        # FOR[PRODUCTION]:
-        # FOR[professors]:
-        # FOR[students]:
-        # FOR[teaching-assistants]:
-    
-    (for_mac_os): &settings
-        (local_package_managers): ['npm']
-        (dependencies):
-            - node
-            - git
+    basic_info: &basic_info_reference
+        (project_commands): &project_commands_reference
+            # auto-insert the !lang/console if they dont put one
+            run: !language/ruby
+                puts "hi"
+            stop: \`pkill node`
+            compile: gcc *.cpp
         (structures):
             - npm-package
             - vs-code-package
             - git-repo
-        (project_commands): &commands
-            # auto-insert the !lang/console if they dont put one
-            (run): !language/ruby
-                puts "hi"
-            (stop): \`pkill node`
-            (compile): gcc *.cpp
-            (test): echo 'yup this test works'
-        
-        # caveats for a speficic sub-version
-        (for_yosemite):
-            <<: *settings # this injects all the settings here
+        (dependencies):
+            - node
+            - npm
+            - git
+    
+    (advanced_settings):
+        (default_context): developing
+        (put_new_dependencies_under): [ '(project)', 'basic_info', '(dependencies)' ]
+        (local_package_managers): ['npm', 'pip'] # by default the local package managers are always here
+        (environment_variables):
+            JAVA_VERSION: "8.9"
+        <<: *basic_info_reference # this injects all the (basic_info) here
+        when(--context is 'developing'):
+            # caveats for a specific OS
+            when(--os is 'windows'):
+                <<: *basic_info_reference # this injects all the (basic_info) here
+                (project_commands):
+                    <<: *project_command_reference
+                    show_files: dir # this is a custom command specific to windows
+            when(--os is 'linux'):
+                # caveats for a specific OS sub-version
+                when(--os is 'linux.arch'):
+                    (project_commands):
+                        # include all the normal commands
+                        <<: *project_commands_reference
+                        # add a command
+                        my_ip_address: !language/console "ip"
+        # caveats for a different context
+        when(--context is 'testing'):
+            (environment_variables):
+                CMAKE_LIB: "testing"
             (project_commands):
-                <<: *commands
-                test: 'this is specific to yosimite'
-    
-    (for_linux_os):
-        <<: *settings # this injects all the settings here
-    
-    # caveats for a different OS
-    (for_windows_os):
-        <<: *settings # this injects all the settings here
-        (project_commands):
-            <<: *commands
-            show_files: dir
+                run: node tests.rb
+            
+            when(--os is 'windows'):
+                (environment_variables):
+                    CMAKE_LIB: "C:\\testing"
 
+
+# Details for repo's that are going to be part of the ATK ecosystem
 atk_package:
     unique_name: 'node'
     dependencies: &reference_to_dependencies
