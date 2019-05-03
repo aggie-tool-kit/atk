@@ -45,22 +45,22 @@ atk-settings:
                 (project_commands):
                     <<: *project_commands_reference 
                     show_files: dir # this is a custom command specific to windows
-        #     when(--os is 'linux'):
-        #         # caveats for a specific OS sub-version
-        #         when(--os is 'linux.arch'):
-        #             (project_commands):
-        #                 <<: *project_commands_reference # this injects all the (project_commands) here
-        #                 my_ip_address: "ip" # this is a custom command specific to arch linux
-        # # caveats for a different context
-        # when(--context is 'testing'):
-        #     (environment_variables):
-        #         CMAKE_LIB: "testing"
-        #     (project_commands):
-        #         run: node tests.rb
+            when(--os is 'linux'):
+                # caveats for a specific OS sub-version
+                when(--os is 'linux.arch'):
+                    (project_commands):
+                        <<: *project_commands_reference # this injects all the (project_commands) here
+                        my_ip_address: "ip" # this is a custom command specific to arch linux
+        # caveats for a different context
+        when(--context is 'testing'):
+            (environment_variables):
+                CMAKE_LIB: "testing"
+            (project_commands):
+                run: node tests.rb
             
-        #     when(--os is 'windows'):
-        #         (environment_variables):
-        #             CMAKE_LIB: "C:\\testing"
+            when(--os is 'windows'):
+                (environment_variables):
+                    CMAKE_LIB: "C:\\testing"
 
 
 # Details for repo's that are going to be part of the ATK ecosystem
