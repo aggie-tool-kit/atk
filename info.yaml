@@ -32,37 +32,35 @@ atk-settings:
             - git
     
     (advanced_settings):
-        (default_context): developing
-        (put_new_dependencies_under): [ '(project)', 'basic_info', '(dependencies)' ]
         (local_package_managers): ['npm', 'pip'] # by default the local package managers are always here
+        (put_new_dependencies_under): [ '(project)', 'basic_info', '(dependencies)' ]
+        default(--context): developing
+        default(--os): !eval/language/ruby require 'os'; OS
         (environment_variables):
             JAVA_VERSION: "8.9"
         <<: *basic_info_reference # this injects all the (basic_info) here
         when(--context is 'developing'):
             # caveats for a specific OS
             when(--os is 'windows'):
-                <<: *basic_info_reference # this injects all the (basic_info) here
                 (project_commands):
-                    <<: *project_command_reference
+                    <<: *project_commands_reference 
                     show_files: dir # this is a custom command specific to windows
-            when(--os is 'linux'):
-                # caveats for a specific OS sub-version
-                when(--os is 'linux.arch'):
-                    (project_commands):
-                        # include all the normal commands
-                        <<: *project_commands_reference
-                        # add a command
-                        my_ip_address: !language/console "ip"
-        # caveats for a different context
-        when(--context is 'testing'):
-            (environment_variables):
-                CMAKE_LIB: "testing"
-            (project_commands):
-                run: node tests.rb
+        #     when(--os is 'linux'):
+        #         # caveats for a specific OS sub-version
+        #         when(--os is 'linux.arch'):
+        #             (project_commands):
+        #                 <<: *project_commands_reference # this injects all the (project_commands) here
+        #                 my_ip_address: "ip" # this is a custom command specific to arch linux
+        # # caveats for a different context
+        # when(--context is 'testing'):
+        #     (environment_variables):
+        #         CMAKE_LIB: "testing"
+        #     (project_commands):
+        #         run: node tests.rb
             
-            when(--os is 'windows'):
-                (environment_variables):
-                    CMAKE_LIB: "C:\\testing"
+        #     when(--os is 'windows'):
+        #         (environment_variables):
+        #             CMAKE_LIB: "C:\\testing"
 
 
 # Details for repo's that are going to be part of the ATK ecosystem
