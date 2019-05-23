@@ -48,31 +48,25 @@ os_heirarchy = {
 # the groups are the pratical side of the OS, they describe the OS rather than fit it prefectly into a heirarchy
 module OS
     # TODO: have the version pick one of the verions in the os_heirarchy according to the current OS
-    def version
+    def self.version
         raise "not yet implemented"
     end
     
-    def mac?
-        (/darwin/ =~ RUBY_PLATFORM) != nil
-    end
-    
-    def windows?
-        (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
-    end
-    
-    def unix?
-        not self.windows?
-    end
-
-    def linux?
-        (not self.windows?) && (not self.mac?)
-    end
-    
-    def arch_based?
-        raise "not yet implemented"
-    end
-    
-    def debian_based?
-        raise "not yet implemented"
+    def self.is?(adjective)
+        # summary:
+            # this is a function created for convenience, so it doesn't have to be perfect
+            # you can use it to ask about random qualities of the current OS and get a boolean response
+        # convert to string (if its a symbol)
+        adjective = adjective.to_s
+        case adjective
+            when 'windows'
+                return (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
+            when 'mac'
+                return (/darwin/ =~ RUBY_PLATFORM) != nil
+            when 'linux'
+                return (not OS.is?(:windows)) && (not OS.is?(:mac))
+            when 'unix'
+                return OS.is?(:windows) || OS.is?(:mac)
+        end
     end
 end

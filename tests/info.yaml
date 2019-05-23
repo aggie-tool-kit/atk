@@ -5,9 +5,18 @@
     description: Blah
     homepage: www.blah.com
     
+    auto_generated_commands: !evaluate/ruby |
+        commands = {}
+        # check for a scripts directory
+        script_file_paths = Dir["scripts/*"]
+        for each in script_file_paths
+            commands[File.basename(each, ".*")] = "./#{each}"
+        end
+        commands
+    
     basic_setup: &basic_setup_reference
         (project_commands): &basic_commands
-            # auto-insert the !lang/console if they dont put one
+            # TODO: auto-insert the !language/console if they dont put one
             run: !language/ruby
                 puts "hi"
             stop: \`pkill node`
