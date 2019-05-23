@@ -5,7 +5,7 @@
     description: Blah
     homepage: www.blah.com
     
-    auto_generated_commands: !evaluate/ruby |
+    auto_generated_commands: &auto_generated_commands !evaluate/ruby |
         commands = {}
         # check for a scripts directory
         script_file_paths = Dir["scripts/*"]
@@ -13,7 +13,7 @@
             commands[File.basename(each, ".*")] = "./#{each}"
         end
         commands
-    
+        
     basic_setup: &basic_setup_reference
         (project_commands): &basic_commands
             # TODO: auto-insert the !language/console if they dont put one
@@ -21,6 +21,8 @@
                 puts "hi"
             stop: \`pkill node`
             compile: gcc *.cpp
+            # TODO:
+            ? !inline [ *auto_generated_commands ]
         (environment_variables):
             JAVA_VERSION: "8.9"
         (structures):
