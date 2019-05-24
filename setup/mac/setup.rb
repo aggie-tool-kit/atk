@@ -61,8 +61,8 @@ Dir.mkdir('./atk/atk-protected-bin') unless Dir.exist?('./atk/atk-protected-bin'
 # change the permissions
 Dir.chdir('./atk')
 # download the atk and project command 
-# download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/atk', as: './atk-protected-bin/atk')
-# download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/project', as: './atk-protected-bin/project')
+download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/atk', as: './atk-protected-bin/atk')
+download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/project', as: './atk-protected-bin/project')
 # 
 # set the permissions
 # 
