@@ -1,4 +1,4 @@
-/usr/bin/ruby -e '
+/usr/bin/ruby -e Command << HeredocDelimiter
 def download(input_1=nil, from:nil, url:nil, as:nil)
     require "open-uri"
     # argument checking 
@@ -23,4 +23,4 @@ end
 
 download("https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/mac/setup.rb", as: "./setup.rb")
 system "ruby setup.rb"
-'
+HeredocDelimiter
