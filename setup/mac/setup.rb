@@ -79,4 +79,5 @@ if OS.is? :mac
     -'cp "$HOME/atk/paths" /etc/paths'
     # give ownership back to root
     -"sudo chown root /etc/paths"
+    puts "Restart the terminal to get access to the `atk` and `project` command"
 end
