@@ -61,4 +61,5 @@
 - Create an uninstaller for ATK
 - Get structures working
     - generate a list of structures and their version #'s
-- create a !eval/language/ruby type that will instant eval itself and treat the evaluation as the value
+
+- standardize the ruby version that is used on mac and linux

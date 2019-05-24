@@ -5,7 +5,6 @@ It needs all of the following dependencies:
 - ruby 2.4
 - a traditional package manager (homebrew, scoop, apt, pacman, yum)
 - git
-- docker
 - the (not yet created) atk ruby-gem
 
 The installer should create a new folder `atk-bin`, then add that folder as a low-priority section of the system path
