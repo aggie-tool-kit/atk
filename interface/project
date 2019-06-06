@@ -1,51 +1,55 @@
 #!/usr/bin/ruby
 require 'atk_toolbox'
 
-# TODO: check to make sure project exists
-if ARGV.length == 0
-    puts "This is part of ATK! I'm glad to see you're using it.\nRunning it with no arguments will just get you this message :)"
-else
-    # 
-    # Check dependencies
-    # 
-        # if they're not met, then warn the user about that
-        # check a hash of the file to see if anything has changed
-    case ARGV[0]
-        when 'init'
-            Info.init
-        when 'mix'
-            structure_name = ARGV[1]
-            # use this to mix a structure into the project
-            # TODO:
-            # get the context
-                # if there is a --context='something' command line option, then use that
-                # otherwise use the default(--context) speficied in the info.yaml
-                # re-iterate through the info.yaml (advanced_setup) keys
-                # find all of the "when(--context = 'something')" keys
-                # find the (dependencies) sub-key for them, create one if the key doesn't exist
-                # add the project and version to the 
-        when 'add'
-            package = ARGV[1]
-            # check if there is an info.yaml
-            # check if there is an local_package_manager in the info.yaml
-            # if there is only 1, then use it
-            # if there is more than one, ask which one the user wants to use
-        when 'remove'
-            package = ARGV[1]
-            # check if there is an local_package_manager in the info.yaml
-            # if it does use it to remove the package
-        when 'obliterate-local-dependencies'
-            # check if there is an local_package_manager in the info.yaml
-            # if there is then use it to figure out which files to remove
-        when 'run'
-            # extract the (project_commands) section from the info.yaml, 
-            # then find the command with the same name as ARGV[1] and run it
-            command_name = ARGV[1]
-            command = Info.project_commands[command_name]
-            if command.is_a?(String)
-                -command
-            elsif command == nil
-                puts "I don't think that command is in the info.yaml file"
-            end
+def project(args)
+    # TODO: check to make sure project exists
+    if args.length == 0
+        puts "This is part of ATK! I'm glad to see you're using it.\nRunning it with no arguments will just get you this message :)"
+    else
+        # 
+        # Check dependencies
+        # 
+            # if they're not met, then warn the user about that
+            # check a hash of the file to see if anything has changed
+        case args[0]
+            when 'init'
+                Info.init
+            when 'mix'
+                structure_name = args[1]
+                # use this to mix a structure into the project
+                # TODO:
+                # get the context
+                    # if there is a --context='something' command line option, then use that
+                    # otherwise use the default(--context) speficied in the info.yaml
+                    # re-iterate through the info.yaml (advanced_setup) keys
+                    # find all of the "when(--context = 'something')" keys
+                    # find the (dependencies) sub-key for them, create one if the key doesn't exist
+                    # add the project and version to the 
+            when 'add'
+                package = args[1]
+                # check if there is an info.yaml
+                # check if there is an local_package_manager in the info.yaml
+                # if there is only 1, then use it
+                # if there is more than one, ask which one the user wants to use
+            when 'remove'
+                package = args[1]
+                # check if there is an local_package_manager in the info.yaml
+                # if it does use it to remove the package
+            when 'obliterate-local-dependencies'
+                # check if there is an local_package_manager in the info.yaml
+                # if there is then use it to figure out which files to remove
+            when 'run'
+                # extract the (project_commands) section from the info.yaml, 
+                # then find the command with the same name as args[1] and run it
+                command_name = args[1]
+                command = Info.project_commands[command_name]
+                if command.is_a?(String)
+                    -command
+                elsif command == nil
+                    puts "I don't think that command is in the info.yaml file"
+                end
+        end
     end
 end
+
+project(commandline_args())
