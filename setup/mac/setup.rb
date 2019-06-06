@@ -63,6 +63,12 @@ Dir.mkdir('./atk/atk-bin')           unless Dir.exist?('./atk/atk-bin')
 Dir.mkdir('./atk/atk-protected-bin') unless Dir.exist?('./atk/atk-protected-bin')
 # change the permissions
 Dir.chdir('./atk')
+# take ownership of the folder
+-'sudo chown "$(whoami)" atk-protected-bin'
+# only the owner can write
+-"sudo chmod -R u+xrw atk-bin"
+-"sudo chmod -R u+xrw atk-protected-bin"
+
 # download the atk and project command 
 download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/atk', as: './atk-protected-bin/atk')
 download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/project', as: './atk-protected-bin/project')
