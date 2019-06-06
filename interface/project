@@ -1,20 +1,7 @@
 #!/usr/bin/ruby
 require 'atk_toolbox'
 
-
-# 
-# Get project settings
-#
-    # check for a local info.yaml
-    begin
-        data = yamlOpen("info.yaml")
-    rescue 
-        # no file
-    end
-    # get the project settings key
-    # pick the sub-value specific to this OS
-
-
+# TODO: check to make sure project exists
 if ARGV.length == 0
     puts "This is part of ATK! I'm glad to see you're using it.\nRunning it with no arguments will just get you this message :)"
 else
@@ -22,11 +9,13 @@ else
     # Check dependencies
     # 
         # if they're not met, then warn the user about that
-    
+        # check a hash of the file to see if anything has changed
     case ARGV[0]
-        when 'integrate'
+        when 'init'
+            Info.init
+        when 'mix'
             structure_name = ARGV[1]
-            # use this to integrate a structure into the project
+            # use this to mix a structure into the project
             # TODO:
             # get the context
                 # if there is a --context='something' command line option, then use that

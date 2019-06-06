@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+require 'atk_toolbox'
 
 if ARGV.length == 0
     puts "This is the ATK command! I'm glad to see you're using it.\nRunning it with no arguments will just get you this message :)"
