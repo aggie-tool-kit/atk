@@ -6,6 +6,12 @@ if ARGV.length == 0
 # if one argument, then act like grep
 else
     case ARGV[0]
+        when 'update'
+            if ARGV[1] == nil
+                if OS.is?('mac')
+                    -'eval `curl -L git.io/fjBzd`'
+                end
+            end
         when 'install'
             # first check the locally-stored core listing
             # then check the locally-stored main listing
