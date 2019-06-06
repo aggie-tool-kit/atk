@@ -2,7 +2,8 @@ require 'etc'
 
 class String
     def -@
-        return Process.wait(Process.spawn(self))
+        Process.wait(Process.spawn(self))
+        return $?
     end
 end
 
@@ -45,10 +46,12 @@ def download(input_1=nil, from:nil, url:nil, as:nil)
     end
 end
 
-
-# install homebrew, which should install command line tools
--'/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
-# # install git
+# if they don't have homebrew
+if not((-'command -v brew >/dev/null 2>&1').success?)
+    # install homebrew, which should install command line tools
+    -'/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+end
+# install git
 -'brew install git'
 # 
 # create the atk-protected-bin, atk-bin
