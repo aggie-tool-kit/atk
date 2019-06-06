@@ -1,5 +1,4 @@
 #!/usr/bin/ruby
-require_relative './project'
-
-new_args = [ "run", *commandline_args() ]
-project(new_args)
+require 'atk_toolbox'
+# FIXME: this is very hacky! input needs to be escaped 
+-"project run #{ARGV.join(' ')}"

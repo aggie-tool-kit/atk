@@ -52,4 +52,5 @@ def project(args)
     end
 end
 
-project(commandline_args())
+$args = commandline_args()
+project($args)
