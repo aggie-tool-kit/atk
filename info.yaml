@@ -1,0 +1,4 @@
+(project):
+    (advanced_setup):
+        (project_commands):
+            test: echo hello
