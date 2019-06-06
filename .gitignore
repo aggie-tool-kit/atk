@@ -1,2 +1,5 @@
 .DS_Store
-.vscode/
+*.nosync*
+node_modules/
+.cache
+**/.vscode/ipch

@@ -121,4 +121,8 @@ end
 -'cp "$HOME/atk/paths" /etc/paths'
 # give ownership back to root
 -"sudo chown root /etc/paths"
+
+
+# install the atk_toolbox gem
+-'gem install atk_toolbox'
 puts "Restart the terminal to get access to the `atk` and `project` command"
