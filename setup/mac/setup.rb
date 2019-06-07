@@ -52,7 +52,8 @@ if not((-'command -v brew >/dev/null 2>&1').success?)
     -'/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
 end
 # install git
--'brew install git'
+-'brew install git python3'
+-'pip3 install ruamel.yaml'
 # 
 # create the atk-protected-bin, atk-bin
 # 
