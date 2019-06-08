@@ -1,4 +1,5 @@
 require 'etc'
+puts "\e[H\e[2J" # clear the screen
 
 class String
     def -@
@@ -142,4 +143,5 @@ end
 -'sudo /usr/bin/gem install atk_toolbox &>/dev/null'
 `brew install git python3 &>/dev/null`
 `pip3 install ruamel.yaml asciimatics &>/dev/null`
+puts "\e[H\e[2J" # clear the screen
 -'python3 ./atk_animation.py'
