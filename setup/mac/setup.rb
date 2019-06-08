@@ -149,3 +149,4 @@ end
 `brew install git &>/dev/null`
 `pip3 install ruamel.yaml &>/dev/null`
 thread.join()
+puts "Installation Complete"
