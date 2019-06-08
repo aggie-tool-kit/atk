@@ -1,6 +1,27 @@
 #!/usr/bin/ruby
 require 'atk_toolbox'
 
+def install(package_name)
+    # check for an internet connection
+    # check if the package is alread installed
+        # ask if they want to reinstall/update it
+    # split up the package name from the version
+    # check if it exists in core
+    core = YAML.load_file(File.join(Etc.getpwuid.dir, "atk", "core.yaml"))
+    if core[package_name] != nil
+    # TODO: check if its in approved
+    # TODO: check if its in unapproved
+    end
+    # download the zip file
+    # unzip it
+    # parse the (installer) field to get OS specific settings
+    # TODO: recursively check all of the dependencies
+        # install the ones they don't have
+        # tell them about the ones that are newer
+        # ask them to upgrade the ones that are older
+    # run the (install_command)
+end
+
 if ARGV.length == 0
     puts "This is the ATK command! I'm glad to see you're using it.\nRunning it with no arguments will just get you this message :)"
 # if one argument, then act like grep
@@ -10,9 +31,14 @@ else
             if ARGV[1] == nil
                 if OS.is?('mac')
                     -'eval `curl -L git.io/fjBzd`'
+                else
+                    raise "OS not yet supported for this command"
                 end
             end
         when 'install'
+            package_name = ARGV[1]
+            # load the core packages
+            
             # first check the locally-stored core listing
             # then check the locally-stored main listing
             # then search github for the repo
