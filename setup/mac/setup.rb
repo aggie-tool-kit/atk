@@ -71,10 +71,12 @@ Dir.chdir('./atk')
 -"sudo chmod -R u+xrw atk-bin"
 -"sudo chmod -R u+xrw atk-protected-bin"
 
-# download the atk and project command 
-download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/atk', as: './atk-protected-bin/atk')
+# download the core listing
+download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/core.yaml', as: './core.yaml')
+# download commands
+download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/atk'    , as: './atk-protected-bin/atk')
 download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/project', as: './atk-protected-bin/project')
-download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/--', as: './atk-protected-bin/--')
+download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/--'     , as: './atk-protected-bin/--')
 # 
 # set the permissions
 # 
