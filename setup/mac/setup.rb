@@ -70,9 +70,14 @@ Dir.chdir('./atk')
 -"sudo chmod -R u+xrw atk-bin"
 -"sudo chmod -R u+xrw atk-protected-bin"
 
-# download the core listing
-download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/core.yaml')
+# Get the animation going
 download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/atk_animation.py')
+`brew install python3 &>/dev/null`
+`pip3 install asciimatics &>/dev/null`
+thread = Thread.new { -'python3 ./atk_animation.py' }
+
+# download everything else while the animation is running
+download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/core.yaml')
 # create the installed_packages file
 IO.write("./installed_packages.yaml","")
 # download commands
@@ -141,7 +146,6 @@ end
 
 # install the atk_toolbox gem
 -'sudo /usr/bin/gem install atk_toolbox &>/dev/null'
-`brew install git python3 &>/dev/null`
-`pip3 install ruamel.yaml asciimatics &>/dev/null`
-puts "\e[H\e[2J" # clear the screen
--'python3 ./atk_animation.py'
+`brew install git &>/dev/null`
+`pip3 install ruamel.yaml &>/dev/null`
+thread.join()
