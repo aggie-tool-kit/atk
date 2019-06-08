@@ -73,7 +73,7 @@ Dir.chdir('./atk')
 download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/core.yaml', as: './core.yaml')
 download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/atk_animation.py', as: './core.yaml')
 # create the installed_packages file
-OS.write("./installed_packages.yaml","")
+IO.write("./installed_packages.yaml","")
 # download commands
 download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/atk'    , as: './atk-protected-bin/atk')
 download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/project', as: './atk-protected-bin/project')
