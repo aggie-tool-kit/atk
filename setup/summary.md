@@ -1,12 +1,15 @@
 The installer is a one-time program for setting up ATK on a new machine
 There should be a one-liner CMD argument for each of the big three OS's
 
+
+It needs to create an atk folder in `Etc.getpwuid.dir` (the home directory)
+
 It needs to download these files from `interface/`
 - atk
 - project
 - core.yaml
 
-It needs to create an atk folder in `File.join(Etc.getpwuid.dir, "atk", "core.yaml")`
+It needs to create an `installed_packages.yaml`
 
 It needs all of the following dependencies:
 - ruby 2.4

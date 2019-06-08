@@ -3,7 +3,7 @@ require 'etc'
 class String
     def -@
         Process.wait(Process.spawn(self))
-        return $?
+        return $?.success?
     end
 end
 
@@ -47,13 +47,11 @@ def download(input_1=nil, from:nil, url:nil, as:nil)
 end
 
 # if they don't have homebrew
-if not((-'command -v brew >/dev/null 2>&1').success?)
+if not (-'command -v brew >/dev/null 2>&1')
     # install homebrew, which should install command line tools
     -'/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
 end
-# install git
--'brew install git python3'
--'pip3 install ruamel.yaml'
+
 # 
 # create the atk-protected-bin, atk-bin
 # 
@@ -73,6 +71,8 @@ Dir.chdir('./atk')
 
 # download the core listing
 download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/core.yaml', as: './core.yaml')
+# create the installed_packages file
+OS.write("./installed_packages.yaml","")
 # download commands
 download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/atk'    , as: './atk-protected-bin/atk')
 download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/project', as: './atk-protected-bin/project')
@@ -139,4 +139,7 @@ end
 
 # install the atk_toolbox gem
 -'sudo /usr/bin/gem install atk_toolbox'
+`brew install git python3`
+`pip3 install ruamel.yaml`
+
 puts "Restart the terminal to get access to the `atk` and `project` command"
