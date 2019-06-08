@@ -71,6 +71,7 @@ Dir.chdir('./atk')
 
 # download the core listing
 download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/core.yaml', as: './core.yaml')
+download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/atk_animation.py', as: './core.yaml')
 # create the installed_packages file
 OS.write("./installed_packages.yaml","")
 # download commands
@@ -140,6 +141,6 @@ end
 # install the atk_toolbox gem
 -'sudo /usr/bin/gem install atk_toolbox'
 `brew install git python3`
-`pip3 install ruamel.yaml`
+`pip3 install ruamel.yaml asciimatics`
 
 puts "Restart the terminal to get access to the `atk` and `project` command"

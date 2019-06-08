@@ -41,6 +41,7 @@ def project(args)
             when 'run'
                 # extract the (project_commands) section from the info.yaml, 
                 # then find the command with the same name as args[1] and run it
+                # TODO: use https://github.com/piotrmurach/tty-markdown#ttymarkdown- to highlight the ruby code 
                 command_name = args[1]
                 command = Info.project_commands[command_name]
                 # FIXME: set the dir to be the same as the info.yaml 

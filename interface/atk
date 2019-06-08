@@ -1,8 +1,15 @@
 #!/usr/bin/ruby
 require 'atk_toolbox'
 
+# TODO: look into https://piotrmurach.github.io/tty/  to animate the terminal
+# TODO: look at https://github.com/pazdera/catpix to add an ATK logo in the terminal
+
 def install(package_name)
     # check for an internet connection
+    if not online?()
+        puts "\n\nIt seems like you're not online at the moment so I can't install anything"
+        return
+    end
     # check if the package is alread installed
         # ask if they want to reinstall/update it
     # split up the package name from the version
