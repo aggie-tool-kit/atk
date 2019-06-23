@@ -1,34 +1,313 @@
 #!/usr/bin/ruby
 require 'atk_toolbox'
-require 'logger' # todo remove after updating to  atk_toolbox 0.0.17
 
+# TODO: add a "strict" install option that installs all of the exact versions of everything, and throws an error if that is impossible
 # TODO: look into https://piotrmurach.github.io/tty/  to animate the terminal
 # TODO: look at https://github.com/pazdera/catpix to add an ATK logo in the terminal
 
-def get_repo_url(package_name)
-    # if its starts with "atk/", just remove that part
-    package_name = package_name.sub( /atk\//, "" )
-    # if the package name does not have a slash in it, then assume it is a core / approved installer
-    if not (package_name =~ /.*\/.*/)
-        path_to_core_listing = HOME/"atk"/"core.yaml"
-        core = YAML.load_file(path_to_core_listing)
-        if core[package_name] == nil
-            puts "I don't see that package in the core, let me make sure I have the latest info"
-            download("https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/core.yaml", as: path_to_core_listing)
-            core = YAML.load_file(path_to_core_listing)
-        end
-        if core[package_name] != nil
-            repo_url = core[package_name]["source"]
+$verbose = false
+$paths = {
+    core_yaml: HOME/"atk"/"core.yaml",
+    installed_yaml: HOME/"atk"/"installers.yaml",
+    installers_folder: HOME/"atk"/"installers",
+}
+
+
+def ensure_cloned_and_up_to_date(target_dir, git_repo_url)
+    # check if it exists
+    if File.dir?(target_dir)
+        if $verbose
+            git_repo = Git.open(target_dir,  :log => Logger.new(STDOUT))
         else
-            raise "That package doesn't seem to be a core package"
+            git_repo = Git.open(target_dir)
         end
-    # if it does have a slash, then assume its a github repo
+    # if it doesn't exist, then clone it
     else
-        repo_url = "https://github.com/"+package_name
+        git_repo = Git.clone(git_repo_url, target_dir)
+    end
+    # pull from origin master
+    # TODO: make this a force pull
+    git_repo.pull
+end
+
+class Version
+    attr_accessor :major, :minor, :patch
+    
+    def initialize(version_as_string)
+        # TODO: make this more safe/better error handling
+        @major, @minor, @patch = version_as_string.split('.').map{|each| each.to_i}
+        @as_string = version_as_string
+    end
+    
+    def <=>(other_version)
+        if not other_version.is_a?(Version)
+            raise "When doing version comparision, both sides must be a version object"
+        end
+        major_size = (@major <=> other_version.major * 100)
+        minor_size = (@minor <=> other_version.minor * 10 )
+        patch_size = (@patch <=> other_version.patch * 1 )
+        return (major_size + minor_size + patch_size) <=> 0
+    end
+    
+    def >(other_version)
+        return (self <=> other_version) == 1
+    end
+    
+    def <(other_version)
+        return (self <=> other_version) == -1
+    end
+    
+    def to_s
+        @as_string
     end
 end
 
-def install(package_name, verbose)
+class PackageInstaller
+    attr_accessor :dependencies, :name, :installed_version
+    @name = nil
+    @installed_version = nil
+    @install_command = nil
+    @dependencies = {}
+    
+    @@installers_info = YAML.load_file($paths[:installed_yaml])
+    
+    def initialize(installer_name)
+        @name = installer_name
+        
+        # check if installed
+        if @@installers_info["installed"][installer_name] != nil
+            @installed_version = @@installers_info["installed"][installer_name]["version"]
+        end
+        
+        # make sure the installer is up to date
+        self.get_latest()
+        
+        # Get the installer data from the info.yaml
+        self.parse_installer_info()
+        
+        # Keep track of who depends on what
+        @@installers_info["dependencies"] = PackageInstaller.add_to_dependency_listing(@name, @installed_version, @dependencies)
+        
+        # now that its been downloaded, save it to the installed packages
+        @@installers_info["downloaded"][installer_name] = { source: self.repo_url() }
+        
+        # save any changes
+        IO.write($paths[:installed_yaml], @@installers_info)
+    end
+    
+    def install(version)
+        # TODO: check for version-specific dependencies, then add them to the installer.yaml
+        @install_command(version)
+    end
+    
+    def get_latest
+        ensure_cloned_and_up_to_date(self.path, self.repo_url())
+    end
+    
+    def repo_url
+        if @repo_url == nil
+            @repo_url = Package.get_repo_url(@name)
+        end
+        return @repo_url
+    end
+
+    def path
+        $paths[:installers_folder]/@name
+    end
+
+    def parse_installer_info
+        # for now, this function ensures that in the info.yaml
+            # (install_command) exists, and is a string
+            # (dependencies) exists, and is a hash
+        # TODO: in the future more diverse inputs will be allowed
+        installer_info = {}
+        begin
+            info = YAML.load_file(self.path/"info.yaml")
+        rescue
+            # TODO: reference documentation in errors so people know what to do about the error
+            raise "\n\nWhen loading the '#{@name}' installer\n    the files were downloaded but there wasn't an info.yaml file in the root directory\n    the owner of the '#{@name}' installer needs to add an info.yaml\n    if you are the package owner, look at the official atk installers on github to see examples of the info.yaml"
+        end
+        if info["(installer)"] == nil
+            raise "\n\nWhen loading the '#{@name}' installer\n    there was an info.yaml file in the root directory\n    however, there was no (installer) key inside the yaml file\n    meaning I don't know what to do with the package\n    the owner of the '#{@name}' installer needs to add an info.yaml\n    if you are the package owner, look at the official atk installers\n    you can find them on github to see examples of the info.yaml"
+        end
+        Info.parse_advanced_setup(info["(installer)"], installer_info)
+        if $verbose
+            puts "installer_info is:"
+            puts installer_info.to_yaml
+        end
+
+        # verify the dependencies
+        if not installer_info["(dependencies)"].is_a?(Hash)
+            raise "\n\nWhen loading the '#{@name}' installer\n    there was an info.yaml file in the root directory\n    however, the (dependencies) wasn't a hash/dict\n    meaning I don't know what to do with it\n    the owner of the '#{@name}' installer needs to add an info.yaml\n    if you are the package owner, look at the official atk installers\n    you can find them on github to see examples of the info.yaml"
+        end
+        @dependencies = installer_info["(dependencies)"]        
+        
+        # verify the (install_command)
+        if not installer_info["(install_command)"].is_a?(String)
+            raise "\n\nWhen loading the '#{@name}' installer\n    there was an info.yaml file in the root directory\n    however, the (install_command) wasn't a string\n    meaning I don't know what to do with it\n    the owner of the '#{@name}' installer needs to add an info.yaml\n    if you are the package owner, look at the official atk installers\n    you can find them on github to see examples of the info.yaml"
+        end
+        # create the runnable lambda
+        @install_command = ->(version) do
+            in_dir(self.path) do 
+                # run the install command
+                -"#{installer_info["(install_command)"]} #{version}"
+            end
+        end
+    end
+    
+    def self.[](installer_name)
+        @@installers_info[installer_name]
+    end
+    
+    def self.get_repo_url(installer_name)
+        # if its starts with "atk/", just remove that part
+        installer_name = installer_name.sub( /atk\//, "" )
+        # if the package name does not have a slash in it, then assume it is a core / approved installer
+        if not (installer_name =~ /.*\/.*/)
+            path_to_core_listing = $paths[:core_yaml]
+            core = YAML.load_file(path_to_core_listing)
+            if core[installer_name] == nil
+                puts "I don't see that package in the core, let me make sure I have the latest info"
+                download("https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/core.yaml", as: path_to_core_listing)
+                core = YAML.load_file(path_to_core_listing)
+            end
+            if core[installer_name] != nil
+                repo_url = core[installer_name]["source"]
+            else
+                raise "That package doesn't seem to be a core package"
+            end
+        # if it does have a slash, then assume its a github repo
+        else
+            repo_url = "https://github.com/"+installer_name
+        end
+    end
+    
+    def self.add_to_dependency_listing(package_name, package_version, dependency_hash)
+        current_dependencies = @@installers_info["dependencies"].dup
+        # add all the dependencies
+        for each_name, each_version in dependency_hash
+            # create if doesn't exist
+            current_dependencies[each_name] ||= {}
+            current_dependencies[each_name]["dependents"] ||= {}
+            current_dependencies[each_name]["dependents"][each_version] ||= []
+            # add this package as a dependent
+            current_dependencies[each_name]["dependents"][each_version].push({ package_name => package_version })
+            # remove duplicates
+            current_dependencies[each_name]["dependents"][each_version].uniq!
+        end
+        return current_dependencies
+    end
+    
+    def self.dependents_of(package_name)
+        @@installers_info["dependencies"][package_name]
+    end
+    
+    def self.is_downloaded?(installer_name)
+        @@installers_info["downloaded"][installer_name] != nil
+    end
+end
+
+def download_dependencies_recursively_bfs(package_name)
+    dependency_names = [package_name]
+    # if there are dependencies that have not been downloaded/checked
+    while dependency_names.length > 0
+        # remove any that are already downloaded
+        for each_new_dependency_name in dependency_names.dup
+            if PackageInstaller.is_downloaded?(each_new_dependency_name)
+                dependency_names.remove(each_new_dependency_name)
+            end
+        end
+        
+        # download all the ones that are not downloaded
+        for each in dependency_names.dup
+            # (downloads the dependency)
+            package_installer = PackageInstaller.new(each)
+            # add all the sub dependencies
+            for each_dependency_name, each_dependency_version in package_installer.dependencies
+                dependency_names.add(each_dependency_name)
+            end
+        end
+    end
+end
+
+$on_deck = {}
+def install_dependencies(package_name, version)
+    # check for screwed up looping of dependencies
+    if $on_deck[package_name] != nil
+        raise "\n\nOne of the dependencies (or sub-dependencies) of '#{package_name}', is '#{package_name}'\n    ...So to install '#{package_name}' you have to already have '#{package_name}' installed\n    obviously this doesn't make a ton of sense and its not clear who messed up :/\n    the topmost package needed the #{$on_deck[package_name]} version\n    the deeper package needed the #{version} version"
+    end
+    # add the current package, since it is in the process of installation
+    $on_deck[package_name] = version
+    # update/download the installer
+    installer = PackageInstaller.new(package_name)
+    # 
+    # check for version mismatches
+    # 
+    if installer.installed_version == nil
+        need_to_install = true
+    else
+        comparision = Version.new(version) <=> Version.new(installer.installed_version)
+        case comparision
+        # already installed
+        when 0
+            need_to_install = false
+        # current version is newer
+        when 1
+            # TODO: this behavior should become smarter in the future, some kind of warning or question
+            need_to_install = false
+        # current version is older
+        when -1
+            # TODO: this behavior should become smarter in the future, a confirmation or some other kind of improvement
+            # TODO: in the future, run the uninstall if avalible
+            need_to_install = true
+        end
+    end
+    
+    # only install if needed
+    if need_to_install
+        # recursively install all of the dependencies first
+        for each_installer_name, each_package_version in installer.dependencies
+            install_dependencies(each_installer_name, each_package_version)
+        end
+        
+        # then run the installation
+        installer.install(version)
+    end
+    
+    # remove the current package from on_deck since it has finished installing
+    $on_deck.delete(package_name)
+end
+
+def install_dependencies(package_name)
+    shallow_checked_dependencies = Set.new()
+    unchecked_dependences = Set.new()
+    for each in package_name.dependencies
+        
+    end
+    loop do
+        # get all the sub dependencies
+        for each_installer in unchecked_dependences.dup
+            for each_sub_dependency in each_installer.dependencies
+                # if the sub dependency hasn't been checked
+                if not shallow_checked_dependencies.include?(each_sub_dependency)
+                    unchecked_dependences.add(each_sub_dependency)
+                end
+            end
+            # just finished checking all the sub_dependencies, meaning this dependency has been checked
+            unchecked_dependences.remove(each_installer)
+            shallow_checked_dependencies.add(each_installer)
+        end
+        
+        # if all of the dependences have been checked
+        if unchecked_dependences.length == 0
+            break
+        end
+    end
+end
+
+
+def install(installer_name)
+    
     # TODO: split up the package name from the version
     
     # check for an internet connection
@@ -37,44 +316,13 @@ def install(package_name, verbose)
         return
     end
     
-    repo_url = get_repo_url(package_name)
-    package_path = HOME/"atk"/"installers"/package_name
-    # check if it exists
-    if File.exist?(package_path)
-        if verbose
-            git_repo = Git.open(package_path,  :log => Logger.new(STDOUT))
-        else
-            git_repo = Git.open(package_path)
-        end
-    # if it doesn't exist, then clone it
-    else
-        git_repo = Git.clone(repo_url, package_path)
-    end
-    # pull from origin master
-    git_repo.pull
-    # then open the info.yaml and get the install command
-    installer_info = {}
-    begin
-        info = YAML.load_file(package_path/"info.yaml")
-    rescue
-        # TODO: reference documentation in errors so people know what to do about the error
-        raise "\n\nWhen installing the '#{package_name}' installer\n    the files were downloaded but there wasn't an info.yaml file in the root directory\n    the owner of the '#{package_name}' installer needs to add an info.yaml\n    if you are the package owner, look at the official atk installers on github to see examples of the info.yaml"
-    end
-    if info["(installer)"] == nil
-        raise "\n\nWhen installing the '#{package_name}' installer\n    there was an info.yaml file in the root directory\n    however, there was no (installer) key inside the yaml file\n    meaning I don't know what to do with the package\n    the owner of the '#{package_name}' installer needs to add an info.yaml\n    if you are the package owner, look at the official atk installers\n    you can find them on github to see examples of the info.yaml"
-    end
-    Info.parse_advanced_setup(info["(installer)"], installer_info)
-    if verbose
-        puts "installer_info is:"
-        puts installer_info.to_yaml
-    end
-    # TODO: install all of the dependencies
+    # Get the installer (downloads latest if doesn't exits)
+    installer = PackageInstaller.new(installer_name)
+    
+    
+    
         # create an "on-deck" and "pre-on-deck" set of packages that need to be installed
-    # if its a normal system command then go ahead an run it
-    if installer_info["(install_command)"].is_a?(String)
-        puts "Running install command for package"
-        # -"#{installer_info["(install_command)"]}"
-    end
+    
     
     # check if the package is alread installed
         # ask if they want to reinstall/update it
@@ -84,6 +332,8 @@ def install(package_name, verbose)
         # tell them about the ones that are newer
         # ask them to upgrade the ones that are older
     # run the (install_command)
+    # TODO: make this more efficient by using multithreading
+    IO.write($paths[:installed_yaml], installed_packages)
 end
 
 if ARGV.length == 0
@@ -100,9 +350,9 @@ else
                 end
             end
         when 'install'
-            package_name = ARGV[1]
+            installer_name = ARGV[1]
             # load the core packages
-            install(package_name)
+            install(installer_name)
             # first check the locally-stored core listing
             # then check the locally-stored main listing
             # then search github for the repo
