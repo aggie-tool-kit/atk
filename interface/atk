@@ -15,7 +15,7 @@ $paths = {
 
 def ensure_cloned_and_up_to_date(target_dir, git_repo_url)
     # check if it exists
-    if File.dir?(target_dir)
+    if File.directory?(target_dir)
         if $verbose
             git_repo = Git.open(target_dir,  :log => Logger.new(STDOUT))
         else
@@ -72,7 +72,14 @@ class PackageInstaller
     @@installers_info = YAML.load_file($paths[:installed_yaml])
     
     def initialize(installer_name)
+        # TODO: handle name parsing if it is for an approved repo_url
+        # TODO: handle name parsing if it is a full git url
         @name = installer_name
+        
+        # make sure all of them exist
+        @@installers_info["installed"] ||= {}
+        @@installers_info["downloaded"] ||= {}
+        @@installers_info["dependencies"] ||= {}
         
         # check if installed
         if @@installers_info["installed"][installer_name] != nil
@@ -92,12 +99,12 @@ class PackageInstaller
         @@installers_info["downloaded"][installer_name] = { source: self.repo_url() }
         
         # save any changes
-        IO.write($paths[:installed_yaml], @@installers_info)
+        IO.write($paths[:installed_yaml], @@installers_info.to_yaml)
     end
     
-    def install(version)
+    def run_install_command(version)
         # TODO: check for version-specific dependencies, then add them to the installer.yaml
-        @install_command(version)
+        @install_command[version]
     end
     
     def get_latest
@@ -106,7 +113,7 @@ class PackageInstaller
     
     def repo_url
         if @repo_url == nil
-            @repo_url = Package.get_repo_url(@name)
+            @repo_url = PackageInstaller.get_repo_url(@name)
         end
         return @repo_url
     end
@@ -205,135 +212,56 @@ class PackageInstaller
     def self.is_downloaded?(installer_name)
         @@installers_info["downloaded"][installer_name] != nil
     end
-end
-
-def download_dependencies_recursively_bfs(package_name)
-    dependency_names = [package_name]
-    # if there are dependencies that have not been downloaded/checked
-    while dependency_names.length > 0
-        # remove any that are already downloaded
-        for each_new_dependency_name in dependency_names.dup
-            if PackageInstaller.is_downloaded?(each_new_dependency_name)
-                dependency_names.remove(each_new_dependency_name)
-            end
+    
+    @@installations_on_deck = {}
+    def self.install(package_name, version, top_level:true)
+        # if this is the first call in a series of recursions, reset the on_deck
+        if top_level
+            @@installations_on_deck = {}
         end
-        
-        # download all the ones that are not downloaded
-        for each in dependency_names.dup
-            # (downloads the dependency)
-            package_installer = PackageInstaller.new(each)
-            # add all the sub dependencies
-            for each_dependency_name, each_dependency_version in package_installer.dependencies
-                dependency_names.add(each_dependency_name)
-            end
+        # check for screwed up looping of dependencies
+        if @@installations_on_deck[package_name] != nil
+            raise "\n\nOne of the dependencies (or sub-dependencies) of '#{package_name}', is '#{package_name}'\n    ...So to install '#{package_name}' you have to already have '#{package_name}' installed\n    obviously this doesn't make a ton of sense and its not clear who messed up :/\n    the topmost package needed the #{$on_deck[package_name]} version\n    the deeper package needed the #{version} version"
         end
-    end
-end
-
-$on_deck = {}
-def install_dependencies(package_name, version)
-    # check for screwed up looping of dependencies
-    if $on_deck[package_name] != nil
-        raise "\n\nOne of the dependencies (or sub-dependencies) of '#{package_name}', is '#{package_name}'\n    ...So to install '#{package_name}' you have to already have '#{package_name}' installed\n    obviously this doesn't make a ton of sense and its not clear who messed up :/\n    the topmost package needed the #{$on_deck[package_name]} version\n    the deeper package needed the #{version} version"
-    end
-    # add the current package, since it is in the process of installation
-    $on_deck[package_name] = version
-    # update/download the installer
-    installer = PackageInstaller.new(package_name)
-    # 
-    # check for version mismatches
-    # 
-    if installer.installed_version == nil
-        need_to_install = true
-    else
-        comparision = Version.new(version) <=> Version.new(installer.installed_version)
-        case comparision
-        # already installed
-        when 0
-            need_to_install = false
-        # current version is newer
-        when 1
-            # TODO: this behavior should become smarter in the future, some kind of warning or question
-            need_to_install = false
-        # current version is older
-        when -1
-            # TODO: this behavior should become smarter in the future, a confirmation or some other kind of improvement
-            # TODO: in the future, run the uninstall if avalible
+        # add the current package, since it is in the process of installation
+        @@installations_on_deck[package_name] = version
+        # update/download the installer
+        installer = PackageInstaller.new(package_name)
+        # 
+        # check for version mismatches
+        # 
+        if installer.installed_version == nil
             need_to_install = true
-        end
-    end
-    
-    # only install if needed
-    if need_to_install
-        # recursively install all of the dependencies first
-        for each_installer_name, each_package_version in installer.dependencies
-            install_dependencies(each_installer_name, each_package_version)
-        end
-        
-        # then run the installation
-        installer.install(version)
-    end
-    
-    # remove the current package from on_deck since it has finished installing
-    $on_deck.delete(package_name)
-end
-
-def install_dependencies(package_name)
-    shallow_checked_dependencies = Set.new()
-    unchecked_dependences = Set.new()
-    for each in package_name.dependencies
-        
-    end
-    loop do
-        # get all the sub dependencies
-        for each_installer in unchecked_dependences.dup
-            for each_sub_dependency in each_installer.dependencies
-                # if the sub dependency hasn't been checked
-                if not shallow_checked_dependencies.include?(each_sub_dependency)
-                    unchecked_dependences.add(each_sub_dependency)
-                end
+        else
+            case Version.new(version) <=> Version.new(installer.installed_version)
+            # if already installed
+            when 0
+                need_to_install = false
+            # if current version is newer
+            when 1
+                # TODO: this behavior should become smarter in the future, some kind of warning or question
+                need_to_install = false
+            # if current version is older
+            when -1
+                # TODO: this behavior should become smarter in the future, a confirmation or some other kind of improvement
+                # TODO: in the future, run the uninstall if avalible
+                need_to_install = true
             end
-            # just finished checking all the sub_dependencies, meaning this dependency has been checked
-            unchecked_dependences.remove(each_installer)
-            shallow_checked_dependencies.add(each_installer)
         end
         
-        # if all of the dependences have been checked
-        if unchecked_dependences.length == 0
-            break
+        if need_to_install
+            # recursively install all of the dependencies first
+            for each_installer_name, each_package_version in installer.dependencies
+                PackageInstaller.install(each_installer_name, each_package_version, top_level:false)
+            end
+            
+            # then run the installation
+            installer.run_install_command(version)
         end
+        
+        # remove the current package from on_deck since it has finished installing
+        @@installations_on_deck.delete(package_name)
     end
-end
-
-
-def install(installer_name)
-    
-    # TODO: split up the package name from the version
-    
-    # check for an internet connection
-    if not online?()
-        puts "\n\nIt seems like you're not online at the moment so I can't install anything"
-        return
-    end
-    
-    # Get the installer (downloads latest if doesn't exits)
-    installer = PackageInstaller.new(installer_name)
-    
-    
-    
-        # create an "on-deck" and "pre-on-deck" set of packages that need to be installed
-    
-    
-    # check if the package is alread installed
-        # ask if they want to reinstall/update it
-    # parse the (installer) field to get OS specific settings
-    # TODO: recursively check all of the dependencies
-        # install the ones they don't have
-        # tell them about the ones that are newer
-        # ask them to upgrade the ones that are older
-    # run the (install_command)
-    # TODO: make this more efficient by using multithreading
-    IO.write($paths[:installed_yaml], installed_packages)
 end
 
 if ARGV.length == 0
@@ -351,11 +279,17 @@ else
             end
         when 'install'
             installer_name = ARGV[1]
-            # load the core packages
-            install(installer_name)
-            # first check the locally-stored core listing
-            # then check the locally-stored main listing
-            # then search github for the repo
+            # TODO: split up the package name from the version
+            version = nil
+            
+            # check for an internet connection
+            if not online?()
+                puts "\n\nIt seems like you're not online at the moment so I can't install anything"
+                return
+            end
+            
+            # recursively install packages
+            PackageInstaller.install(installer_name, version)
             
             # once a package is found, save it locally and run it's installer
         when 'uninstall'

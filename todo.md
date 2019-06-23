@@ -1,9 +1,19 @@
+Current Plan:
+- get the basic installers working
+- add uninstall support
+- get setup working for ubuntu
+- create an API for registering a new global command
+    - create a github installer template for creating a new global command
+- add support for dynamic/version-specific dependencies
+- add support for no-info.yaml package installers
+- try downloading only the info.yaml first, and then check to see what else should be downloaded
+
+
 - finish defining the package specs
     - create a github template for an installer
         - info.yaml # for project management commands
         - install
         - uninstall
-- create a version comparison tool
 - create an environment variable ATK that is a JSON object
     - have it contain all the info in the settings.yaml file
 - create a way to set the ATK-installer-version variable
@@ -47,11 +57,7 @@
     - add the installed version and its direct dependencies to `library.yaml`
 
 - allow the commands key to be a script
-
-- create an API for registering a new global command
-    - create a github installer template for creating a new global command
 - create an API for unzip/untaring a folder
-- create an API for $HOME_DIR, and $TEMP_DIR
 
 ### Pre-Alpha v2 Version
 - Be able to parse the info.yaml
