@@ -1,17 +1,18 @@
 #!/usr/bin/ruby
 require 'atk_toolbox'
+require 'logger' # todo remove after updating to  atk_toolbox 0.0.17
 
 # TODO: look into https://piotrmurach.github.io/tty/  to animate the terminal
 # TODO: look at https://github.com/pazdera/catpix to add an ATK logo in the terminal
 
 def get_repo_url(package_name)
     # if its starts with "atk/", just remove that part
-    package_name.sub!( /atk\//, "" )
+    package_name = package_name.sub( /atk\//, "" )
     # if the package name does not have a slash in it, then assume it is a core / approved installer
     if not (package_name =~ /.*\/.*/)
         path_to_core_listing = HOME/"atk"/"core.yaml"
         core = YAML.load_file(path_to_core_listing)
-        if core[package_name] != nil
+        if core[package_name] == nil
             puts "I don't see that package in the core, let me make sure I have the latest info"
             download("https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/core.yaml", as: path_to_core_listing)
             core = YAML.load_file(path_to_core_listing)
@@ -27,7 +28,7 @@ def get_repo_url(package_name)
     end
 end
 
-def install(package_name)
+def install(package_name, verbose)
     # TODO: split up the package name from the version
     
     # check for an internet connection
@@ -37,8 +38,43 @@ def install(package_name)
     end
     
     repo_url = get_repo_url(package_name)
-    # clone it to the location
-    Git.clone(repo_url, HOME/"atk"/package_name)
+    package_path = HOME/"atk"/"installers"/package_name
+    # check if it exists
+    if File.exist?(package_path)
+        if verbose
+            git_repo = Git.open(package_path,  :log => Logger.new(STDOUT))
+        else
+            git_repo = Git.open(package_path)
+        end
+    # if it doesn't exist, then clone it
+    else
+        git_repo = Git.clone(repo_url, package_path)
+    end
+    # pull from origin master
+    git_repo.pull
+    # then open the info.yaml and get the install command
+    installer_info = {}
+    begin
+        info = YAML.load_file(package_path/"info.yaml")
+    rescue
+        # TODO: reference documentation in errors so people know what to do about the error
+        raise "\n\nWhen installing the '#{package_name}' installer\n    the files were downloaded but there wasn't an info.yaml file in the root directory\n    the owner of the '#{package_name}' installer needs to add an info.yaml\n    if you are the package owner, look at the official atk installers on github to see examples of the info.yaml"
+    end
+    if info["(installer)"] == nil
+        raise "\n\nWhen installing the '#{package_name}' installer\n    there was an info.yaml file in the root directory\n    however, there was no (installer) key inside the yaml file\n    meaning I don't know what to do with the package\n    the owner of the '#{package_name}' installer needs to add an info.yaml\n    if you are the package owner, look at the official atk installers\n    you can find them on github to see examples of the info.yaml"
+    end
+    Info.parse_advanced_setup(info["(installer)"], installer_info)
+    if verbose
+        puts "installer_info is:"
+        puts installer_info.to_yaml
+    end
+    # TODO: install all of the dependencies
+        # create an "on-deck" and "pre-on-deck" set of packages that need to be installed
+    # if its a normal system command then go ahead an run it
+    if installer_info["(install_command)"].is_a?(String)
+        puts "Running install command for package"
+        # -"#{installer_info["(install_command)"]}"
+    end
     
     # check if the package is alread installed
         # ask if they want to reinstall/update it
@@ -66,7 +102,7 @@ else
         when 'install'
             package_name = ARGV[1]
             # load the core packages
-            
+            install(package_name)
             # first check the locally-stored core listing
             # then check the locally-stored main listing
             # then search github for the repo
