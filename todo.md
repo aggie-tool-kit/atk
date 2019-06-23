@@ -46,6 +46,7 @@
     - pop the atk_toolbox installer frame to get a list of all the direct dependencies
     - add the installed version and its direct dependencies to `library.yaml`
 
+- allow the commands key to be a script
 
 - create an API for registering a new global command
     - create a github installer template for creating a new global command

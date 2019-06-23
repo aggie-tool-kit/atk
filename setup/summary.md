@@ -9,8 +9,6 @@ It needs to download these files from `interface/`
 - project
 - core.yaml
 
-It needs to create an `installed_packages.yaml`
-
 It needs all of the following dependencies:
 - ruby 2.4
 - the "atk_toolbox" ruby-gem
@@ -19,11 +17,7 @@ It needs all of the following dependencies:
 - python 3.7
 - the pip package "ruamel.yaml"
 
-The installer should create a new folder `atk-bin`, then add that folder as a low-priority section of the system path
-    To do this on unix, edit `/etc/paths` and add the `atk-bin` section
-
-Add the `project` and `atk` exectuables somewhere in the path
-
+The installer should create a new folder `atk/installers`
 
 Somehow (not sure the best way) create the following commands
 - atk

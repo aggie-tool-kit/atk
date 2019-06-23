@@ -4,23 +4,44 @@ require 'atk_toolbox'
 # TODO: look into https://piotrmurach.github.io/tty/  to animate the terminal
 # TODO: look at https://github.com/pazdera/catpix to add an ATK logo in the terminal
 
+def get_repo_url(package_name)
+    # if its starts with "atk/", just remove that part
+    package_name.sub!( /atk\//, "" )
+    # if the package name does not have a slash in it, then assume it is a core / approved installer
+    if not (package_name =~ /.*\/.*/)
+        path_to_core_listing = HOME/"atk"/"core.yaml"
+        core = YAML.load_file(path_to_core_listing)
+        if core[package_name] != nil
+            puts "I don't see that package in the core, let me make sure I have the latest info"
+            download("https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/core.yaml", as: path_to_core_listing)
+            core = YAML.load_file(path_to_core_listing)
+        end
+        if core[package_name] != nil
+            repo_url = core[package_name]["source"]
+        else
+            raise "That package doesn't seem to be a core package"
+        end
+    # if it does have a slash, then assume its a github repo
+    else
+        repo_url = "https://github.com/"+package_name
+    end
+end
+
 def install(package_name)
+    # TODO: split up the package name from the version
+    
     # check for an internet connection
     if not online?()
         puts "\n\nIt seems like you're not online at the moment so I can't install anything"
         return
     end
+    
+    repo_url = get_repo_url(package_name)
+    # clone it to the location
+    Git.clone(repo_url, HOME/"atk"/package_name)
+    
     # check if the package is alread installed
         # ask if they want to reinstall/update it
-    # split up the package name from the version
-    # check if it exists in core
-    core = YAML.load_file(File.join(Etc.getpwuid.dir, "atk", "core.yaml"))
-    if core[package_name] != nil
-    # TODO: check if its in approved
-    # TODO: check if its in unapproved
-    end
-    # download the zip file
-    # unzip it
     # parse the (installer) field to get OS specific settings
     # TODO: recursively check all of the dependencies
         # install the ones they don't have
