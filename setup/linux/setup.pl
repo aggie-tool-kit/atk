@@ -2,12 +2,20 @@
 use strict;
 use warnings;
 
+sub is_a_command {
+    my $command_name = $_[0];
+    my $output = `command -v $command_name`;
+    if ($output =~ /.+/) {
+        return $output;
+    } else {
+        return undef;
+    }
+}
+
 if ($^O eq "linux") {
-    print "TODO: add support for installing ruby on ubuntu and arch"
-    system("cat /etc/os-release")
+    system("command -v ruby")
 } elsif ($^O eq "darwin") {
-    # just run the mac command
-    system("eval `curl -L git.io/fjBzd`")
+    is_a_command("ruby");
 } else {
-    print "Wtf, what operating system are you running this on?"
+    print "Wtf, what operating system are you running this on?";
 }
