@@ -2,6 +2,8 @@
 use strict;
 use warnings;
 
+print "starting perl script\n";
+
 sub is_a_command {
     my $command_name = $_[0];
     my $output = `command -v $command_name`;
@@ -36,25 +38,27 @@ sub has_ruby_that_is_at_least {
         }
     }
 }
-my $message = <<"END_MESSAGE"
-    alkdjfjf
-END_MESSAGE
 
-# check if ruby exists
-if (has_ruby_that_is_at_least(2,4)) {
-    # run the ruby setup 
-    system "curl "
-} else {
+
+sub install_ruby {
     # if ubuntu, install ruby
     if (is_a_command("apt-get")) {
         system "sudo apt-get install ruby <<<\"Y\"";
+    } else {
+        die "Sadly your distro isn't supported yet :/";
     }
 }
 
-if ($^O eq "linux") {
-    system("command -v ruby")
-} elsif ($^O eq "darwin") {
-    is_a_command("ruby");
-} else {
-    print "Wtf, what operating system are you running this on?";
+# 
+# require ruby
+# 
+if (not has_ruby_that_is_at_least(2,4)) {
+    install_ruby();
 }
+# install the atk_toolbox gem
+system "sudo gem install atk_toolbox";
+
+# 
+# run the ruby script
+# 
+system "ruby setup.rb"

@@ -8,4 +8,8 @@ eval `curl -L git.io/fjBzd`
 ```
 
 #### If on linux
-run this command (TODO)
+
+Ubuntu
+```
+eval `wget -qO- git.io/fjiDw`
+```
