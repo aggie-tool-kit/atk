@@ -4,6 +4,11 @@ use warnings;
 
 print "starting perl script\n";
 
+sub bash {
+    my @args = ( "bash", "-c", shift );
+    system(@args);
+}
+
 sub is_a_command {
     my $command_name = $_[0];
     if (`which $command_name` eq "") {
@@ -16,14 +21,14 @@ sub is_a_command {
 sub install_python3_and_pip3_if_needed {
     if (not is_a_command("python3")) {
         if (is_a_command("apt-get")) {
-            system "sudo apt-get install python3 <<<\"Y\"";
+            bash "echo \"sudo apt-get install python3 <<<'Y'\" | bash";
         } else {
             die "Sadly your distro isn't supported yet :/";
         }
     }
     if (not is_a_command("pip3")) {
         if (is_a_command("apt-get")) {
-            system "sudo apt-get install python-pip <<<\"Y\"";
+            bash "echo \"sudo apt-get install python-pip <<<'Y'\" | bash";
         } else {
             die "Sadly your distro isn't supported yet :/";
         }
@@ -59,7 +64,7 @@ sub install_ruby_if_needed {
     if (not has_ruby_that_is_at_least(2,4)) {
         # if ubuntu, install ruby
         if (is_a_command("apt-get")) {
-            system "sudo apt-get install ruby <<<\"Y\"";
+            system "sudo apt-get install ruby <<<'Y'";
         } else {
             die "Sadly your distro isn't supported yet :/";
         }
