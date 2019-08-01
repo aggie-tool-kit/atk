@@ -105,7 +105,8 @@ install_ruamelyaml();
 # 
 # run the setup
 # 
-system <<'HEREDOC';
+bash <<'HEREDOC';
+    mkdir -p ~/atk/temp/
     # download the setup.rb
     curl -fsSL https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/setup.rb > ~/atk/temp/setup.rb
     # run it
