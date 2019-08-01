@@ -71,7 +71,7 @@ set_command("atk", IO.read(atk_command_download_path))
 # project
 project_command_download_path = HOME/"atk"/"temp"/"project.rb"
 download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/project' , as: project_command_download_path)
-set_command("atk", IO.read(project_command_download_path))
+set_command("project", IO.read(project_command_download_path))
 
 # --
 doubledash_command_download_path = HOME/"atk"/"temp"/"doubledash_command.rb"
