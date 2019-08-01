@@ -1,7 +1,9 @@
 # 
 # install scoop
 # 
-where scoop || iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+if (-not (cmd.exe /c "where scoop")) {
+    iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+}
 # go home
 cd
 
