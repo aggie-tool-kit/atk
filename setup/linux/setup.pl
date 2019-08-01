@@ -6,18 +6,10 @@ print "starting perl script\n";
 
 sub is_a_command {
     my $command_name = $_[0];
-    my $output = "hi";
-    
-    eval {
-        $output = `command -v $command_name`;
-    } or do {
-        $output = `which $command_name`;
-    };
-
-    if ($output =~ /.+/) {
-        return $output;
-    } else {
+    if (`which $command_name` eq "") {
         return undef;
+    } else {
+        return $output;
     }
 }
 
