@@ -81,4 +81,9 @@ set_command("--", IO.read(doubledash_command_download_path))
 # 
 # print success
 # 
-puts "ATK installed successfully"
+puts ""
+puts ""
+puts ""
+puts "=============================="
+puts "  ATK installed successfully"
+puts "=============================="
