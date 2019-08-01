@@ -1,5 +1,8 @@
-#### If on windows
-run this command (TODO)
+#### If on windows 10
+run this command
+```
+iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+```
 
 #### If on mac
 run this command in the terminal
