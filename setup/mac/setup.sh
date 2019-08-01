@@ -9,15 +9,17 @@ mkdir -p ~/atk/temp
 # download the animation to the temp dir
 curl -fsSL https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/atk_animation.py > ~/atk/temp/atk_animation.py
 # run installation in the background
-echo <<<HEREDOC
+cat <<HEREDOC | bash &>/dev/null & 
     # get git if not installed
     which git || brew install git
+    # install the ruamel.yaml package
+    pip3 install ruamel.yaml &>/dev/null
     # install the atk_toolbox gem
     gem install atk_toolbox
     # download the setup.rb
     curl -fsSL https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/setup.rb > ~/atk/temp/setup.rb
     # run it
     ruby ~/atk/temp/setup.rb
-HEREDOC | bash & 
+HEREDOC
 # run the animation
 python3 ~/atk/temp/atk_animation.py
