@@ -1,4 +1,3 @@
-Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 # install scoop
 iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
 # install git
