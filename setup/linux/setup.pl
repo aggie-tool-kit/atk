@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use Try::Catch;
 
 print "starting perl script\n";
 
