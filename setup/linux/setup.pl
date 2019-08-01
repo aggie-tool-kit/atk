@@ -8,12 +8,13 @@ print "starting perl script\n";
 sub is_a_command {
     my $command_name = $_[0];
     my $output;
-    try {
-        $output = `command -v $command_name`;
-    } catch {
-        $output = `which $command_name`;
-    };
     
+    eval {
+        $output = `command -v $command_name`;
+    } or do {
+        $output = `which $command_name`;
+    }
+
     if ($output =~ /.+/) {
         return $output;
     } else {
