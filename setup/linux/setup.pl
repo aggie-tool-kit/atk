@@ -21,14 +21,14 @@ sub is_a_command {
 sub install_python3_and_pip3_if_needed {
     if (not is_a_command("python3")) {
         if (is_a_command("apt-get")) {
-            bash "echo \"sudo apt-get install python3 <<<'Y'\" | bash";
+            bash "sudo apt-get install python3 <<<'Y'";
         } else {
             die "Sadly your distro isn't supported yet :/";
         }
     }
     if (not is_a_command("pip3")) {
         if (is_a_command("apt-get")) {
-            bash "echo \"sudo apt-get install python3-pip <<<'Y'\" | bash";
+            bash "sudo apt-get install python3-pip <<<'Y'";
         } else {
             die "Sadly your distro isn't supported yet :/";
         }
@@ -87,6 +87,16 @@ sub install_ruamelyaml {
     }
 }
 
+sub install_git_if_needed {
+    if (not is_a_command("git")) {
+        if (is_a_command("apt-get")) {
+            bash "sudo apt-get install git <<<'Y'";
+        } else {
+            die "Sadly your distro isn't supported yet :/";
+        }
+    }
+}
+
 # 
 # update if needed
 # 
@@ -97,6 +107,7 @@ if (is_a_command("apt")) {
 # 
 # pre-reqs for setup.rb
 # 
+install_git_if_needed();
 install_ruby_if_needed();
 install_atk_toolbox();
 install_python3_and_pip3_if_needed();
