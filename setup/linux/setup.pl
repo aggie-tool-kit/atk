@@ -58,6 +58,7 @@ sub has_ruby_that_is_at_least {
             }
         }
     }
+    return 0;
 }
 
 sub install_ruby_if_needed {
