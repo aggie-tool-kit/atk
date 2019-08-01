@@ -12,7 +12,7 @@ sub is_a_command {
         $output = `command -v $command_name`;
     } or do {
         $output = `which $command_name`;
-    }
+    };
 
     if ($output =~ /.+/) {
         return $output;
