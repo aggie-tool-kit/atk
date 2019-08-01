@@ -28,7 +28,7 @@ sub install_python3_and_pip3_if_needed {
     }
     if (not is_a_command("pip3")) {
         if (is_a_command("apt-get")) {
-            bash "echo \"sudo apt-get install python-pip <<<'Y'\" | bash";
+            bash "echo \"sudo apt-get install python3-pip <<<'Y'\" | bash";
         } else {
             die "Sadly your distro isn't supported yet :/";
         }
@@ -85,6 +85,13 @@ sub install_ruamelyaml {
     if (`pip3 freeze | perl -0pe 's/[\\s\\S]*ruamel\\.yaml[\\s\\S]*/true/g'` ne "true") {
         system "sudo pip3 install ruamel.yaml";
     }
+}
+
+# 
+# update if needed
+# 
+if (is_a_command("apt")) {
+    bash "sudo apt update";
 }
 
 # 
