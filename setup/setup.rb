@@ -78,3 +78,7 @@ doubledash_command_download_path = HOME/"atk"/"temp"/"doubledash_command.rb"
 download('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/--'      , as: doubledash_command_download_path)
 set_command("--", IO.read(doubledash_command_download_path))
 
+# 
+# print success
+# 
+puts "ATK installed successfully"
