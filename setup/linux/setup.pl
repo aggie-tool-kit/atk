@@ -65,7 +65,7 @@ sub install_ruby_if_needed {
     if (not has_ruby_that_is_at_least(2,4)) {
         # if ubuntu, install ruby
         if (is_a_command("apt-get")) {
-            system "sudo apt-get install ruby <<<'Y'";
+            bash "sudo apt-get install ruby <<<'Y'";
         } else {
             die "Sadly your distro isn't supported yet :/";
         }
@@ -73,18 +73,18 @@ sub install_ruby_if_needed {
 }
 
 sub install_atk_toolbox {
-    system "sudo gem install atk_toolbox";
+    bash "sudo gem install atk_toolbox";
 }
 
 sub install_asciimatics {
     if (`pip3 freeze | perl -0pe 's/[\\s\\S]*asciimatics[\\s\\S]*/true/g'` ne "true") {
-        system "sudo pip3 install asciimatics";
+        bash "sudo pip3 install asciimatics";
     }
 }
 
 sub install_ruamelyaml {
     if (`pip3 freeze | perl -0pe 's/[\\s\\S]*ruamel\\.yaml[\\s\\S]*/true/g'` ne "true") {
-        system "sudo pip3 install ruamel.yaml";
+        bash "sudo pip3 install ruamel.yaml";
     }
 }
 
