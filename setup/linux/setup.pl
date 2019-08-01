@@ -7,7 +7,7 @@ print "starting perl script\n";
 sub is_a_command {
     my $command_name = $_[0];
     if (`which $command_name` eq "") {
-        return undef;
+        return 0;
     } else {
         return 1;
     }
@@ -45,9 +45,9 @@ sub has_ruby_that_is_at_least {
             my $major_number = int($1);
             my $minor_number = int($2);
             if ($major_number lt $_[0]) {
-                return undef;
+                return 0;
             } elsif ($minor_number lt $_[1]) {
-                return undef;
+                return 0;
             } else {
                 return 1;
             }
