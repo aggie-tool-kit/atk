@@ -6,7 +6,7 @@ print "starting perl script\n";
 
 sub is_a_command {
     my $command_name = $_[0];
-    my $output;
+    my $output = "hi";
     
     eval {
         $output = `command -v $command_name`;
