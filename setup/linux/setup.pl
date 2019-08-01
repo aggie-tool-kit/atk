@@ -9,7 +9,7 @@ sub is_a_command {
     if (`which $command_name` eq "") {
         return undef;
     } else {
-        return $output;
+        return 1;
     }
 }
 
