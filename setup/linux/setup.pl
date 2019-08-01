@@ -6,11 +6,34 @@ print "starting perl script\n";
 
 sub is_a_command {
     my $command_name = $_[0];
-    my $output = `command -v $command_name`;
+    my $output;
+    try {
+        $output = `command -v $command_name`;
+    } catch {
+        $output = `which $command_name`;
+    };
+    
     if ($output =~ /.+/) {
         return $output;
     } else {
         return undef;
+    }
+}
+
+sub install_python3_and_pip3_if_needed {
+    if (not is_a_command("python3")) {
+        if (is_a_command("apt-get")) {
+            system "sudo apt-get install python3 <<<\"Y\"";
+        } else {
+            die "Sadly your distro isn't supported yet :/";
+        }
+    }
+    if (not is_a_command("pip3")) {
+        if (is_a_command("apt-get")) {
+            system "sudo apt-get install pip3 <<<\"Y\"";
+        } else {
+            die "Sadly your distro isn't supported yet :/";
+        }
     }
 }
 
@@ -39,26 +62,47 @@ sub has_ruby_that_is_at_least {
     }
 }
 
+sub install_ruby_if_needed {
+    if (not has_ruby_that_is_at_least(2,4)) {
+        # if ubuntu, install ruby
+        if (is_a_command("apt-get")) {
+            system "sudo apt-get install ruby <<<\"Y\"";
+        } else {
+            die "Sadly your distro isn't supported yet :/";
+        }
+    }
+}
 
-sub install_ruby {
-    # if ubuntu, install ruby
-    if (is_a_command("apt-get")) {
-        system "sudo apt-get install ruby <<<\"Y\"";
-    } else {
-        die "Sadly your distro isn't supported yet :/";
+sub install_atk_toolbox {
+    system "sudo gem install atk_toolbox";
+}
+
+sub install_asciimatics {
+    if (`pip3 freeze | perl -0pe 's/[\\s\\S]*asciimatics[\\s\\S]*/true/g'` ne "true") {
+        system "sudo pip3 install asciimatics";
+    }
+}
+
+sub install_ruamelyaml {
+    if (`pip3 freeze | perl -0pe 's/[\\s\\S]*ruamel\\.yaml[\\s\\S]*/true/g'` ne "true") {
+        system "sudo pip3 install ruamel.yaml";
     }
 }
 
 # 
-# require ruby
+# pre-reqs for setup.rb
 # 
-if (not has_ruby_that_is_at_least(2,4)) {
-    install_ruby();
-}
-# install the atk_toolbox gem
-system "sudo gem install atk_toolbox";
-
+install_ruby_if_needed();
+install_atk_toolbox();
+install_python3_and_pip3_if_needed();
+install_asciimatics();
+install_ruamelyaml();
 # 
-# run the ruby script
+# run the setup
 # 
-system "ruby setup.rb"
+system <<'HEREDOC';
+    # download the setup.rb
+    curl -fsSL https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/setup.rb > ~/atk/temp/setup.rb
+    # run it
+    ruby ~/atk/temp/setup.rb
+HEREDOC

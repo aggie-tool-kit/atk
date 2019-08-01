@@ -9,7 +9,7 @@ mkdir -p ~/atk/temp
 # download the animation to the temp dir
 curl -fsSL https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/atk_animation.py > ~/atk/temp/atk_animation.py
 # run installation in the background
-cat <<HEREDOC | bash &>/dev/null & 
+cat <<HEREDOC | bash &>/dev/null &
     # get git if not installed
     which git || brew install git
     # install the ruamel.yaml package

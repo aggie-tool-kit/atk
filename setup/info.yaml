@@ -1,8 +1,0 @@
-# an example of the info.yaml Global Settings (stored in home)
-atk_settings:
-    on_startup:
-        add_aliases:
-            "@" : "project"
-            "::" : "project"
-        add_variables:
-            "JAVA_VERSION" : "blah"
