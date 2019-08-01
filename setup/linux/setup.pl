@@ -123,4 +123,3 @@ bash <<'HEREDOC';
     # run it
     ruby ~/atk/temp/setup.rb
 HEREDOC
-print "finished installing ATK\n";
