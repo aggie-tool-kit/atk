@@ -28,6 +28,11 @@ scoop install git
 # install ruby & gem
 scoop install ruby
 $Env:path += "$Home\scoop\apps\ruby\current\bin"
+# setup msys2 (for ruby)
+scoop install msys2
+"exit
+" | msys2
+ridk install
 # install atk_toolbox
 & "$Home\scoop\apps\ruby\current\bin\gem.cmd" install atk_toolbox
 # install python3 & pip3
@@ -36,4 +41,6 @@ scoop install python
 & "$Home\scoop\apps\python\current\Scripts\pip.exe" install asciimatics ruamel.yaml
 # download and run the script
 refreshenv
-ruby -e (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/setup.rb')
+$install_script = (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/setup.rb')
+New-Item -Path . -Name "setup.rb" -ItemType "file" -Value $install_script
+ruby setup.rb
