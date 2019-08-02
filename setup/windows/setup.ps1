@@ -19,10 +19,10 @@ scoop install ruby
 $Env:path += "$Home\scoop\apps\current\bin"
 $Env:path += "$Home\scoop\apps\ruby\current\bin"
 # install atk_toolbox
-scoop\apps\current\bin\gem.cmd install atk_toolbox
+& "$Home\scoop\apps\current\bin\gem.cmd" install atk_toolbox
 # install python3 & pip3
 scoop install python
 # install asciimatics and ruamel.yaml
-scoop\apps\python\current\Scripts\pip.exe install asciimatics ruamel.yaml
+& "$Home\scoop\apps\python\current\Scripts\pip.exe" install asciimatics ruamel.yaml
 # download and run the script
 & "$Home\scoop\apps\ruby\current\bin\ruby.exe" -e (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/setup.rb')
