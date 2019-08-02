@@ -39,8 +39,8 @@ $program2 = @"
 %~dp0resetvars.vbs
 call "%TEMP%\resetvars.bat"
 "@
-New-Item -Path "C:$Home\AppData\local\Microsoft\WindowsApps\" -Name "resetvars.vb" -ItemType "file" -Value $program1
-New-Item -Path "C:$Home\AppData\local\Microsoft\WindowsApps\" -Name "resetvars.bat" -ItemType "file" -Value $program2
+New-Item -Path "$Home\AppData\local\Microsoft\WindowsApps\" -Name "resetvars.vb" -ItemType "file" -Value $program1
+New-Item -Path "$Home\AppData\local\Microsoft\WindowsApps\" -Name "resetvars.bat" -ItemType "file" -Value $program2
 
 
 $Env:path += "$Home\scoop\shims"
