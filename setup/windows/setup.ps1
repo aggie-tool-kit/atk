@@ -1,3 +1,8 @@
+# TODO:
+    # - check if ruby is already installed, and what version
+    # - check if python is already installed, and what version
+    # - remove chocolately after installation
+
 # 
 # install scoop
 # 
@@ -7,18 +12,15 @@ if (-not (cmd.exe /c "where scoop")) {
 # go home
 cd $Home
 
-
 # 
 # install chocolately to gain access to a "refreshenv" command
 # 
 $InstallDir='C:\ProgramData\chocoportable'
 $env:ChocolateyInstall="$InstallDir"
 Set-ExecutionPolicy RemoteSigned -scope CurrentUser
+iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
 
-# TODO:
-    # - check if ruby is already installed, and what version
-    # - check if python is already installed, and what version
 $Env:path += "$Home\scoop\shims"
 
 # install git
