@@ -39,7 +39,8 @@ call "%TEMP%\resetvars.bat"
 
 New-Item -Path . -Name "resetvars.vbs" -ItemType "file" -Value $program_1
 New-Item -Path . -Name "resetvars.bat" -ItemType "file" -Value $program_2
-
+resetvars.bat # reset the variables
+echo "Just reset the variables"
 
 # TODO:
     # - check if ruby is already installed, and what version
