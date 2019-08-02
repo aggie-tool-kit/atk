@@ -12,7 +12,6 @@ cd $Home
     # - check if python is already installed, and what version
 $Env:path += "$Home\scoop\shims"
 
-
 # install git
 scoop install git
 # install ruby & gem
@@ -26,4 +25,4 @@ scoop install python
 # install asciimatics and ruamel.yaml
 scoop\apps\python\current\Scripts\pip.exe install asciimatics ruamel.yaml
 # download and run the script
-$Home\scoop\apps\ruby\current\bin\ruby.exe -e (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/setup.rb')
+& "$Home\scoop\apps\ruby\current\bin\ruby.exe" -e (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/setup.rb')
