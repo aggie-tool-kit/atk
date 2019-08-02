@@ -7,6 +7,40 @@ if (-not (cmd.exe /c "where scoop")) {
 # go home
 cd $Home
 
+
+# create something for updating ENV variables without constantly needing to restart the CMD window
+$program_1 = @"
+Set oShell = WScript.CreateObject("WScript.Shell")
+filename = oShell.ExpandEnvironmentStrings("%TEMP%\resetvars.bat")
+Set objFileSystem = CreateObject("Scripting.fileSystemObject")
+Set oFile = objFileSystem.CreateTextFile(filename, TRUE)
+
+set oEnv=oShell.Environment("System")
+for each sitem in oEnv 
+    oFile.WriteLine("SET " & sitem)
+next
+path = oEnv("PATH")
+
+set oEnv=oShell.Environment("User")
+for each sitem in oEnv 
+    oFile.WriteLine("SET " & sitem)
+next
+
+path = path & ";" & oEnv("PATH")
+oFile.WriteLine("SET PATH=" & path)
+oFile.Close
+"@
+
+$program_2 = @"
+@echo off
+%~dp0resetvars.vbs
+call "%TEMP%\resetvars.bat"
+"@
+
+New-Item -Path . -Name "resetvars.vbs" -ItemType "file" -Value $program_1
+New-Item -Path . -Name "resetvars.bat" -ItemType "file" -Value $program_2
+
+
 # TODO:
     # - check if ruby is already installed, and what version
     # - check if python is already installed, and what version
@@ -24,5 +58,5 @@ scoop install python
 # install asciimatics and ruamel.yaml
 & "$Home\scoop\apps\python\current\Scripts\pip.exe" install asciimatics ruamel.yaml
 # download and run the script
-$string = (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/setup.rb')
-& "$Home\scoop\apps\ruby\current\bin\ruby.exe" -e $string
+resetvars.bat # reset the variables
+& "$Home\scoop\apps\ruby\current\bin\ruby.exe" -e (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/setup.rb')
