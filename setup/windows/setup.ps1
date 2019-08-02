@@ -26,4 +26,4 @@ scoop install python
 # install asciimatics and ruamel.yaml
 scoop\apps\python\current\Scripts\pip.exe install asciimatics ruamel.yaml
 # download and run the script
-# %USERPROFILE%\scoop\apps\ruby\current\bin\ruby.exe -e (new-object net.webclient).downloadstring('https://get.scoop.sh')
+%USERPROFILE%\scoop\apps\ruby\current\bin\ruby.exe -e (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/setup.rb')
