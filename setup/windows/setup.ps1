@@ -12,14 +12,6 @@ if (-not (cmd.exe /c "where scoop")) {
 # go home
 cd $Home
 
-# 
-# install chocolately to gain access to a "refreshenv" command
-# 
-$InstallDir='C:\ProgramData\chocoportable'
-$env:ChocolateyInstall="$InstallDir"
-Set-ExecutionPolicy RemoteSigned -scope CurrentUser
-iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-
 
 $Env:path += "$Home\scoop\shims"
 
@@ -32,7 +24,6 @@ $Env:path += "$Home\scoop\apps\ruby\current\bin"
 scoop install msys2
 "exit
 " | msys2
-ridk install
 # install atk_toolbox
 & "$Home\scoop\apps\ruby\current\bin\gem.cmd" install atk_toolbox
 # install python3 & pip3
@@ -40,7 +31,6 @@ scoop install python
 # install asciimatics and ruamel.yaml
 & "$Home\scoop\apps\python\current\Scripts\pip.exe" install asciimatics ruamel.yaml
 # download and run the script
-refreshenv
 $install_script = (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/setup.rb')
 New-Item -Path . -Name "setup.rb" -ItemType "file" -Value $install_script
 ruby setup.rb
