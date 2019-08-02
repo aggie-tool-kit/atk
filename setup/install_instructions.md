@@ -1,7 +1,7 @@
 #### If on windows 10
 run this command
 ```
-powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring('https://git.io/fj9Rf')"
+powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring('https://git.io/fj9Rf')"; resetvars
 ```
 
 #### If on mac
