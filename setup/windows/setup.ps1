@@ -8,37 +8,13 @@ if (-not (cmd.exe /c "where scoop")) {
 cd $Home
 
 
-# create something for updating ENV variables without constantly needing to restart the CMD window
-$program_1 = @"
-Set oShell = WScript.CreateObject("WScript.Shell")
-filename = oShell.ExpandEnvironmentStrings("%TEMP%\resetvars.bat")
-Set objFileSystem = CreateObject("Scripting.fileSystemObject")
-Set oFile = objFileSystem.CreateTextFile(filename, TRUE)
+# 
+# install chocolately to gain access to a "refreshenv" command
+# 
+$InstallDir='C:\ProgramData\chocoportable'
+$env:ChocolateyInstall="$InstallDir"
+Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 
-set oEnv=oShell.Environment("System")
-for each sitem in oEnv 
-    oFile.WriteLine("SET " & sitem)
-next
-path = oEnv("PATH")
-
-set oEnv=oShell.Environment("User")
-for each sitem in oEnv 
-    oFile.WriteLine("SET " & sitem)
-next
-
-path = path & ";" & oEnv("PATH")
-oFile.WriteLine("SET PATH=" & path)
-oFile.Close
-"@
-
-$program_2 = @"
-@echo off
-%~dp0resetvars.vbs
-call "%TEMP%\resetvars.bat"
-"@
-
-New-Item -Path . -Name "resetvars.vbs" -ItemType "file" -Value $program_1
-New-Item -Path . -Name "resetvars.bat" -ItemType "file" -Value $program_2
 
 # TODO:
     # - check if ruby is already installed, and what version
@@ -57,6 +33,5 @@ scoop install python
 # install asciimatics and ruamel.yaml
 & "$Home\scoop\apps\python\current\Scripts\pip.exe" install asciimatics ruamel.yaml
 # download and run the script
-$setup_script = (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/setup.rb')
-New-Item -Path . -Name "setup.rb" -ItemType "file" -Value $setup_script
-cmd /c ".\resetvars.bat & ruby setup.rb"
+refreshenv
+ruby -e (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/setup.rb')
