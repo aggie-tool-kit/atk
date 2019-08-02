@@ -17,7 +17,7 @@ set PATH=%PATH%;C:\%HOMEPATH%\scoop\shims
 scoop install git
 # install ruby & gem
 scoop install ruby
-set PATH=%PATH%;C:\%HOMEPATH%\scoop\apps\current\bin\
+set PATH=%PATH%;C:\%HOMEPATH%\scoop\apps\current\bin
 set PATH=%PATH%;C:\%HOMEPATH%\scoop\apps\ruby\current\bin
 # install atk_toolbox
 scoop\apps\current\bin\gem.cmd install atk_toolbox
