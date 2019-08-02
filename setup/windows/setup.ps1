@@ -16,10 +16,9 @@ $Env:path += "$Home\scoop\shims"
 scoop install git
 # install ruby & gem
 scoop install ruby
-$Env:path += "$Home\scoop\apps\current\bin"
 $Env:path += "$Home\scoop\apps\ruby\current\bin"
 # install atk_toolbox
-& "$Home\scoop\apps\current\bin\gem.cmd" install atk_toolbox
+& "$Home\scoop\apps\ruby\current\bin\gem.cmd" install atk_toolbox
 # install python3 & pip3
 scoop install python
 # install asciimatics and ruamel.yaml
