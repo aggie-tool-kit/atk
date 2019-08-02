@@ -59,7 +59,4 @@ scoop install python
 # download and run the script
 $setup_script = (new-object net.webclient).downloadstring('https://raw.githubusercontent.com/aggie-tool-kit/atk/master/setup/setup.rb')
 New-Item -Path . -Name "setup.rb" -ItemType "file" -Value $setup_script
-cmd /c "
-    .\resetvars.bat
-    ruby setup.rb
-"
+cmd /c ".\resetvars.bat & ruby setup.rb"
