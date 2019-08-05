@@ -2,20 +2,26 @@
     <h1 align="center">ATK</h1>
 </p>
 
-Welcome to ATK. ATK is a cross-platform solution for environment configuration/setup and dependency management.
+## What is this?
+It is a quality-of-life tool for all software projects. It brings common sense to creating, sharing, debugging, and running projects cross-platform. This includes depenedency management, command access, and boilerplate generation.
 
-## Requirements
+## How do I install atk?
 
-#### Windows
+### Windows 10
+run this command
+```
+powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring('https://git.io/fj9Rf')" & RefreshEnv.cmd
+```
 
-- Windows 7 SP1+ / Windows Server 2008+
-- [PowerShell 3](https://www.microsoft.com/en-us/download/details.aspx?id=34595) (or later) and [.NET Framework 4.5+](https://www.microsoft.com/net/download)
-- PowerShell must be enabled for your user account e.g. `set-executionpolicy remotesigned -s currentuser`
-
-## Installation
-
-#### Windows
-
-#### MacOS
+### Mac OS (Sierria or higher)
+run this command in the terminal
+```
+eval `curl -L git.io/fjBzd`
+```
 
 #### Linux
+Ubuntu
+```
+eval `wget -qO- git.io/fjiDw`
+```
+More linux support coming soon.
