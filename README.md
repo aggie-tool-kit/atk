@@ -10,18 +10,18 @@ This is a quality-of-life tool for all software projects. It brings common sense
 ### Windows 10
 run this command
 ```
-powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring('https://git.io/fj9Rf')" & RefreshEnv.cmd
+powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring('https://git.io/fj7gT')" & RefreshEnv.cmd
 ```
 
 ### Mac OS (Sierria or higher)
 run this command in the terminal
 ```
-eval `curl -L git.io/fjBzd`
+eval `curl -L git.io/fj7gv`
 ```
 
 ### Linux
 Ubuntu
 ```
-eval `wget -qO- git.io/fjiDw`
+eval `wget -qO- git.io/fj7gk`
 ```
 More linux support coming soon.
