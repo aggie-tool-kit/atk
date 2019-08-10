@@ -240,9 +240,11 @@ else
         when 'update'
             if ARGV[1] == nil
                 if OS.is?('mac')
-                    -'eval `curl -L git.io/fjBzd`'
+                    -'eval `curl -L git.io/fj7gv`'
+                elsif OS.is?('linux')
+                    -'eval `wget -qO- git.io/fj7gk`'
                 else
-                    raise "OS not yet supported for this command"
+                    -'powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring(\'https://git.io/fj7gT\')" & RefreshEnv.cmd'
                 end
             end
         when 'install'
