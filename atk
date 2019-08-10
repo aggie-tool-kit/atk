@@ -15,7 +15,7 @@ $paths = {
 
 def ensure_cloned_and_up_to_date(target_dir, git_repo_url)
     # check if it exists
-    if File.directory?(target_dir)
+    if FS.directory?(target_dir)
         if $verbose
             git_repo = Git.open(target_dir,  :log => Logger.new(STDOUT))
         else
@@ -67,7 +67,7 @@ class PackageInstaller
         @@installers_info["downloaded"][installer_name] = { source: self.repo_url() }
         
         # save any changes
-        IO.write($paths[:installed_yaml], @@installers_info.to_yaml)
+        FS.write(@@installers_info.to_yaml, to: $paths[:installed_yaml])
     end
     
     def run_install_command(version)
