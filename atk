@@ -1,5 +1,5 @@
-#!/usr/bin/ruby
 require 'atk_toolbox'
+require 'digest'
 
 # TODO: add a "strict" install option that installs all of the exact versions of everything, and throws an error if that is impossible
 # TODO: look into https://piotrmurach.github.io/tty/  to animate the terminal
@@ -24,7 +24,7 @@ end
 
 class PackageInstaller
     attr_accessor :dependencies, :name, :installed_version
-    @name = nil
+    @folder_name = nil
     @installed_version = nil
     @install_command = nil
     @dependencies = {}
@@ -32,12 +32,11 @@ class PackageInstaller
     @@installations_on_deck = {}
     @@installers_info = YAML.load_file(ATK.paths[:installed_yaml])
     
-    def initialize(installer_name)
+    def initialize(name)
         # This function update/download the installer for a particular package and adds it's dependencies to all of the relevant locations
     
-        # TODO: handle name parsing if it is for an approved repo_url
-        # TODO: handle name parsing if it is a full git url
-        @name = installer_name
+        @name = PackageInstaller.simplify_name(name)
+        # setting the name, effectively also sets self.folder_name
         
         # make sure all of them exist
         @@installers_info["installed"] ||= {}
@@ -45,8 +44,8 @@ class PackageInstaller
         @@installers_info["dependencies"] ||= {}
         
         # check if installed
-        if @@installers_info["installed"][installer_name] != nil
-            @installed_version = @@installers_info["installed"][installer_name]["version"]
+        if @@installers_info["installed"][self.folder_name] != nil
+            @installed_version = @@installers_info["installed"][self.folder_name]["version"]
         end
         
         # make sure the installer is up to date
@@ -56,13 +55,30 @@ class PackageInstaller
         self.parse_installer_info()
         
         # Keep track of who depends on what
-        @@installers_info["dependencies"] = PackageInstaller.add_to_dependency_listing(@name, @installed_version, @dependencies)
+        @@installers_info["dependencies"] = PackageInstaller.add_to_dependency_listing(self.folder_name, @installed_version, @dependencies)
         
         # now that its been downloaded, save it to the installed packages
-        @@installers_info["downloaded"][installer_name] = { source: self.repo_url() }
+        @@installers_info["downloaded"][self.folder_name] = { source: self.repo_url() }
         
         # save any changes
         FS.write(@@installers_info.to_yaml, to: ATK.paths[:installed_yaml])
+    end
+    
+    def folder_name
+        if @folder_name == nil
+            source = PackageInstaller.simplify_name(@name)
+            # if its a core or approved package
+            if PackageInstaller.is_core_repo?(@name)
+                # the name is just the source
+                @folder_name = @name
+            # if its a url
+            else
+                # use an MD5 hash of the url as the name
+                @folder_name = Digest::MD5.hexdigest(self.repo_url)
+            end
+        else
+            return @folder_name
+        end
     end
     
     def run_install_command(version)
@@ -82,7 +98,7 @@ class PackageInstaller
     end
 
     def path
-        ATK.paths[:installers_folder]/@name
+        ATK.paths[:installers_folder]/self.folder_name
     end
 
     def parse_installer_info
@@ -127,11 +143,30 @@ class PackageInstaller
         @@installers_info[installer_name]
     end
     
-    def self.get_repo_url(installer_name)
+    def self.simplify_name(source)
+        source = source.strip
         # if its starts with "atk/", just remove that part
-        installer_name = installer_name.sub( /atk\//, "" )
+        source = source.sub( /^atk\//, "" )
+        # if it starts with "https://github.com/", just remove that part
+        source = source.sub( /^https:\/\/github.com\//, "" )
+        return source
+    end
+    
+    def self.is_core_repo?(source)
+        PackageInstaller.simplify_name(source)
         # if the package name does not have a slash in it, then assume it is a core / approved installer
         if not (installer_name =~ /.*\/.*/)
+            return true
+        else
+            return false
+        end
+    end
+    
+    def self.get_repo_url(installer_name)
+        # if its starts with "atk/", just remove that part
+        installer_name = PackageInstaller.simplify_name(installer_name)
+        # if the package name does not have a slash in it, then assume it is a core / approved installer
+        if PackageInstaller.is_core_repo?(installer_name)
             path_to_core_listing = ATK.paths[:core_yaml]
             core = YAML.load_file(path_to_core_listing)
             if core[installer_name] == nil
