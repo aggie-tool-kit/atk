@@ -58,5 +58,4 @@ def project(args)
     end
 end
 
-$args = commandline_args()
-project($args)
+project(Console.args)

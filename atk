@@ -5,18 +5,10 @@ require 'atk_toolbox'
 # TODO: look into https://piotrmurach.github.io/tty/  to animate the terminal
 # TODO: look at https://github.com/pazdera/catpix to add an ATK logo in the terminal
 
-$verbose = false
-$paths = {
-    core_yaml: HOME/"atk"/"core.yaml",
-    installed_yaml: HOME/"atk"/"installers.yaml",
-    installers_folder: HOME/"atk"/"installers",
-}
-
-
 def ensure_cloned_and_up_to_date(target_dir, git_repo_url)
     # check if it exists
     if FS.directory?(target_dir)
-        if $verbose
+        if Console.verbose
             git_repo = Git.open(target_dir,  :log => Logger.new(STDOUT))
         else
             git_repo = Git.open(target_dir)
@@ -37,7 +29,7 @@ class PackageInstaller
     @install_command = nil
     @dependencies = {}
     
-    @@installers_info = YAML.load_file($paths[:installed_yaml])
+    @@installers_info = YAML.load_file(ATK.paths[:installed_yaml])
     
     def initialize(installer_name)
         # TODO: handle name parsing if it is for an approved repo_url
@@ -67,7 +59,7 @@ class PackageInstaller
         @@installers_info["downloaded"][installer_name] = { source: self.repo_url() }
         
         # save any changes
-        FS.write(@@installers_info.to_yaml, to: $paths[:installed_yaml])
+        FS.write(@@installers_info.to_yaml, to: ATK.paths[:installed_yaml])
     end
     
     def run_install_command(version)
@@ -87,7 +79,7 @@ class PackageInstaller
     end
 
     def path
-        $paths[:installers_folder]/@name
+        ATK.paths[:installers_folder]/@name
     end
 
     def parse_installer_info
@@ -106,10 +98,8 @@ class PackageInstaller
             raise "\n\nWhen loading the '#{@name}' installer\n    there was an info.yaml file in the root directory\n    however, there was no (installer) key inside the yaml file\n    meaning I don't know what to do with the package\n    the owner of the '#{@name}' installer needs to add an info.yaml\n    if you are the package owner, look at the official atk installers\n    you can find them on github to see examples of the info.yaml"
         end
         Info.parse_advanced_setup(info["(installer)"], installer_info)
-        if $verbose
-            puts "installer_info is:"
-            puts installer_info.to_yaml
-        end
+        log "installer_info is:"
+        log installer_info.to_yaml
 
         # verify the dependencies
         if not installer_info["(dependencies)"].is_a?(Hash)
@@ -123,7 +113,7 @@ class PackageInstaller
         end
         # create the runnable lambda
         @install_command = ->(version) do
-            in_dir(self.path) do 
+            FS.in_dir(self.path) do 
                 # run the install command
                 -"#{installer_info["(install_command)"]} #{version}"
             end
@@ -139,7 +129,7 @@ class PackageInstaller
         installer_name = installer_name.sub( /atk\//, "" )
         # if the package name does not have a slash in it, then assume it is a core / approved installer
         if not (installer_name =~ /.*\/.*/)
-            path_to_core_listing = $paths[:core_yaml]
+            path_to_core_listing = ATK.paths[:core_yaml]
             core = YAML.load_file(path_to_core_listing)
             if core[installer_name] == nil
                 puts "I don't see that package in the core, let me make sure I have the latest info"
