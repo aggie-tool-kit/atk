@@ -29,9 +29,12 @@ class PackageInstaller
     @install_command = nil
     @dependencies = {}
     
+    @@installations_on_deck = {}
     @@installers_info = YAML.load_file(ATK.paths[:installed_yaml])
     
     def initialize(installer_name)
+        # This function update/download the installer for a particular package and adds it's dependencies to all of the relevant locations
+    
         # TODO: handle name parsing if it is for an approved repo_url
         # TODO: handle name parsing if it is a full git url
         @name = installer_name
@@ -47,7 +50,7 @@ class PackageInstaller
         end
         
         # make sure the installer is up to date
-        self.get_latest()
+        ensure_cloned_and_up_to_date(self.path, self.repo_url())
         
         # Get the installer data from the info.yaml
         self.parse_installer_info()
@@ -65,10 +68,10 @@ class PackageInstaller
     def run_install_command(version)
         # TODO: check for version-specific dependencies, then add them to the installer.yaml
         @install_command[version]
-    end
-    
-    def get_latest
-        ensure_cloned_and_up_to_date(self.path, self.repo_url())
+        # if no errors, then update the installed version
+        @@installers_info["installed"][installer_name]["version"] = version
+        # save any changes
+        FS.write(@@installers_info.to_yaml, to: ATK.paths[:installed_yaml])
     end
     
     def repo_url
@@ -171,18 +174,25 @@ class PackageInstaller
         @@installers_info["downloaded"][installer_name] != nil
     end
     
-    @@installations_on_deck = {}
-    def self.install(package_name, version, top_level:true)
+    def self.install(package_name, version_needed, top_level:true)
         # if this is the first call in a series of recursions, reset the on_deck
         if top_level
             @@installations_on_deck = {}
         end
         # check for screwed up looping of dependencies
         if @@installations_on_deck[package_name] != nil
-            raise "\n\nOne of the dependencies (or sub-dependencies) of '#{package_name}', is '#{package_name}'\n    ...So to install '#{package_name}' you have to already have '#{package_name}' installed\n    obviously this doesn't make a ton of sense and its not clear who messed up :/\n    the topmost package needed the #{$on_deck[package_name]} version\n    the deeper package needed the #{version} version"
+            raise <<-HEREDOC.remove_indent
+            
+            
+                One of the dependencies (or sub-dependencies) of '#{package_name}', is '#{package_name}'
+                    ...So to install '#{package_name}' you have to already have '#{package_name}' installed
+                    obviously this doesn't make a ton of sense and its not clear who messed up :/
+                    the topmost package needed the #{$on_deck[package_name]} version
+                    the deeper package needed the #{version_needed} version
+            HEREDOC
         end
         # add the current package, since it is in the process of installation
-        @@installations_on_deck[package_name] = version
+        @@installations_on_deck[package_name] = version_needed
         # update/download the installer
         installer = PackageInstaller.new(package_name)
         # 
@@ -191,7 +201,7 @@ class PackageInstaller
         if installer.installed_version == nil
             need_to_install = true
         else
-            case Version.new(version) <=> Version.new(installer.installed_version)
+            case Version.new(version_needed) <=> Version.new(installer.installed_version)
             # if already installed
             when 0
                 need_to_install = false
@@ -214,7 +224,7 @@ class PackageInstaller
             end
             
             # then run the installation
-            installer.run_install_command(version)
+            installer.run_install_command(version_needed)
         end
         
         # remove the current package from on_deck since it has finished installing
