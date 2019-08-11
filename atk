@@ -76,6 +76,7 @@ class PackageInstaller
         # TODO: check for version-specific dependencies, then add them to the installer.yaml
         @install_command[version]
         # if no errors, then update the installed version
+        @@installers_info["installed"][self.folder_name] ||= {}
         @@installers_info["installed"][self.folder_name]["version"] = version
         # save any changes
         FS.write(@@installers_info.to_yaml, to: ATK.paths[:installed_yaml])
