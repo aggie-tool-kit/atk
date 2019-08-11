@@ -66,16 +66,7 @@ class PackageInstaller
     
     def folder_name
         if @folder_name == nil
-            source = PackageInstaller.simplify_name(@name)
-            # if its a core or approved package
-            if PackageInstaller.is_core_repo?(@name)
-                # the name is just the source
-                @folder_name = @name
-            # if its a url
-            else
-                # use an MD5 hash of the url as the name
-                @folder_name = Digest::MD5.hexdigest(self.repo_url)
-            end
+            @folder_name = PackageInstaller.get_folder_name(@name)
         else
             return @folder_name
         end
@@ -85,7 +76,7 @@ class PackageInstaller
         # TODO: check for version-specific dependencies, then add them to the installer.yaml
         @install_command[version]
         # if no errors, then update the installed version
-        @@installers_info["installed"][installer_name]["version"] = version
+        @@installers_info["installed"][self.folder_name]["version"] = version
         # save any changes
         FS.write(@@installers_info.to_yaml, to: ATK.paths[:installed_yaml])
     end
@@ -140,7 +131,21 @@ class PackageInstaller
     end
     
     def self.[](installer_name)
-        @@installers_info[installer_name]
+        folder_name = PackageInstaller.get_folder_name(installer_name)
+        return @@installers_info["installed"][self.folder_name]
+    end
+    
+    def self.get_folder_name(source)
+        source = PackageInstaller.simplify_name(source)
+        # if its a core or approved package
+        if PackageInstaller.is_core_repo?(source)
+            # the name is just the source
+            return source
+        # if its a url
+        else
+            # use an MD5 hash of the url as the name
+            return Digest::MD5.hexdigest(PackageInstaller.get_repo_url(source))
+        end
     end
     
     def self.simplify_name(source)
