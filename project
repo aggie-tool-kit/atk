@@ -79,7 +79,7 @@ def project(args)
                 end
             else
                 puts "I don't recognized that command\nhere's the `project --help` which might get you what you're looking for:"
-                
+                help_command()
         end
     end
 end

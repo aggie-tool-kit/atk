@@ -2,8 +2,28 @@ require 'atk_toolbox'
 require 'digest'
 
 # TODO: add a "strict" install option that installs all of the exact versions of everything, and throws an error if that is impossible
-# TODO: look into https://piotrmurach.github.io/tty/  to animate the terminal
-# TODO: look at https://github.com/pazdera/catpix to add an ATK logo in the terminal
+
+def not_yet_implemented()
+    puts "Sorry, this feature is still under development"
+end
+
+def help_command()
+    puts <<-HEREDOC.remove_indent
+        atk --help
+            this command, it displays the avalible tools
+        atk install <package> <version>
+            examples: 
+                `atk install python`
+                `atk install python 3`
+                `atk install jeff-hykin/atk-python`
+                `atk install https://github.com/jeff-hykin/atk-python`
+            info:
+                this command is used when you want to manually install a package
+        atk update
+            this will get you the latest version of the `atk`, `project`, and `_` commands
+    HEREDOC
+end
+
 
 def ensure_cloned_and_up_to_date(target_dir, git_repo_url)
     # check if it exists
@@ -278,6 +298,8 @@ if Console.args.length == 0
 # if one argument, then act like grep
 else
     case Console.args[0]
+        when '--help'
+            help_command()
         when 'update'
             if Console.args[1] == nil
                 if OS.is?('mac')
@@ -305,7 +327,9 @@ else
             # once a package is found, save it locally and run it's installer
         when 'uninstall'
             # check to see if the package is installed, and check if it has an uninstaller
+            not_yet_implemented()
         when 'new'
+            not_yet_implemented()
             case Console.args[1]
                 when 'project'
                     # create a folder with an info.yaml
@@ -324,6 +348,9 @@ else
                         # verifier (make sure the structe alread exists)
                         # implementer (make the structure exist if it doesnt)
             end
+        else
+            puts "I don't recognized that command\nhere's the `atk --help` which might get you what you're looking for:"
+            help_command()
     end
     
 end
