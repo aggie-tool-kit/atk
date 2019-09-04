@@ -1,5 +1,25 @@
 require 'atk_toolbox'
 
+def not_yet_implemented()
+    puts "Sorry, this feature is still under development"
+end
+
+def help_command()
+    puts <<-HEREDOC.remove_indent
+        project --help
+            this command, it displays the avalible tools
+        project init
+            this will create an info.yaml in your current directory
+            the info.yaml will contain all the standard project managment tools
+            in the future this command will be more interative
+        project run <name-of-command> <arg1-for-command> <arg2-for-command> <...etc>
+            this will read the local info.yaml of your project to find the commands
+            if you use the `project init` command it will generate an info.yaml which 
+            has examples of the commands. Commands can be console code, or ruby code.
+    HEREDOC
+end
+
+
 def project(args)
     # TODO: check to make sure project exists
     if args.length == 0
@@ -11,9 +31,12 @@ def project(args)
             # if they're not met, then warn the user about that
             # check a hash of the file to see if anything has changed
         case args[0]
+            when '--help'
+                help_command()
             when 'init'
                 Info.init
             when 'mix'
+                not_yet_implemented()
                 structure_name = args[1]
                 # use this to mix a structure into the project
                 # TODO:
@@ -25,16 +48,19 @@ def project(args)
                     # find the (dependencies) sub-key for them, create one if the key doesn't exist
                     # add the project and version to the 
             when 'add'
+                not_yet_implemented()
                 package = args[1]
                 # check if there is an info.yaml
                 # check if there is an local_package_manager in the info.yaml
                 # if there is only 1, then use it
                 # if there is more than one, ask which one the user wants to use
             when 'remove'
+                not_yet_implemented()
                 package = args[1]
                 # check if there is an local_package_manager in the info.yaml
                 # if it does use it to remove the package
             when 'obliterate-local-dependencies'
+                not_yet_implemented()
                 # check if there is an local_package_manager in the info.yaml
                 # if there is then use it to figure out which files to remove
             when 'run'
@@ -45,14 +71,15 @@ def project(args)
                 command = Info.project_commands[command_name]
                 # FIXME: set the dir to be the same as the info.yaml 
                 if command.is_a?(String)
-                    # FIXME: pass ARGV down 
                     -(command+' '+command_args.join(' '))
                 elsif command.is_a?(Code)
-                    # FIXME: pass ARGV down
                     command.run(command_args)
                 elsif command == nil
                     puts "I don't think that command is in the info.yaml file"
                 end
+            else
+                puts "I don't recognized that command\nhere's the `project --help` which might get you what you're looking for:"
+                
         end
     end
 end
