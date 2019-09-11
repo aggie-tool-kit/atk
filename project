@@ -73,7 +73,7 @@ def project(args)
                 if command.is_a?(String)
                     -(command+' '+command_args.join(' '))
                 elsif command.is_a?(Code)
-                    command.run(command_args)
+                    command.run(*command_args)
                 elsif command == nil
                     puts "I don't think that command is in the info.yaml file"
                 end
