@@ -8,7 +8,7 @@ This is a quality-of-life tool for all software projects. It brings common sense
 # How do I install atk?
 
 ### Windows 10
-run this command
+run this command in CMD
 ```
 powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring('https://git.io/fj7gT')" & RefreshEnv.cmd
 ```
