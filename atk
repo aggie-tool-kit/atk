@@ -131,22 +131,31 @@ class PackageInstaller
         Info.parse_advanced_setup(info["(installer)"], installer_info)
         log "installer_info is:"
         log installer_info.to_yaml
-
+        
+        # 
         # verify the dependencies
-        if not installer_info["(dependencies)"].is_a?(Hash)
+        # 
+        # if nil, then convert to an empty hash
+        if installer_info["(dependencies)"] == nil
+            @dependencies = {}
+        # if not nil make sure its a hash
+        elsif not installer_info["(dependencies)"].is_a?(Hash)
             raise "\n\nWhen loading the '#{@name}' installer\n    there was an info.yaml file in the root directory\n    however, the (dependencies) wasn't a hash/dict\n    meaning I don't know what to do with it\n    the owner of the '#{@name}' installer needs to add an info.yaml\n    if you are the package owner, look at the official atk installers\n    you can find them on github to see examples of the info.yaml"
+        else
+            @dependencies = installer_info["(dependencies)"]        
         end
-        @dependencies = installer_info["(dependencies)"]        
         
         # verify the (install_command)
-        if not installer_info["(install_command)"].is_a?(String)
+        if not installer_info["(commands)"].is_a?(Hash) || not installer_info["(commands)"]["(run)"].is_a?(String)
             raise "\n\nWhen loading the '#{@name}' installer\n    there was an info.yaml file in the root directory\n    however, the (install_command) wasn't a string\n    meaning I don't know what to do with it\n    the owner of the '#{@name}' installer needs to add an info.yaml\n    if you are the package owner, look at the official atk installers\n    you can find them on github to see examples of the info.yaml"
+        else
+            run_command = installer_info["(commands)"]["(run)"]
         end
         # create the runnable lambda
         @install_command = ->(version) do
             FS.in_dir(self.path) do 
                 # run the install command
-                -"#{installer_info["(install_command)"]} #{version}"
+                -"#{run_command} #{version}"
             end
         end
     end
@@ -310,7 +319,7 @@ else
                     -'powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring(\'https://git.io/fj7gT\')" & RefreshEnv.cmd'
                 end
             end
-        when 'install'
+        when 'run'
             installer_name = Console.args[1]
             # TODO: split up the package name from the version
             version = nil
