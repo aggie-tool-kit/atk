@@ -35,6 +35,34 @@ def project(args)
                 help_command()
             when 'init'
                 Info.init
+            when 'sync'
+                # if there is an argument
+                message = args[1]
+                if message == nil
+                    message = ""
+                else
+                    if not message.start_with?('--message=')
+                        raise "\n\nWhen giving arguments to the sync command, please give your message as:\n\n    project sync --message='whatever you wanted to say'"
+                    else
+                        # remove the begining of the message
+                        message = args[1].sub(/^--message=/,"")
+                        # remove leading/trailing whitespace
+                        message.strip!
+                    end
+                end
+                if message.size == 0
+                    message = '-'
+                end
+                
+                # add everything
+                system('git add -A')
+                # commit everything
+                system('git', 'commit', '-m', message)
+                # pull down everything
+                system('git pull')
+                # push up everything
+                system('git push')
+                
             when 'mix'
                 not_yet_implemented()
                 structure_name = args[1]
