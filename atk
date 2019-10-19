@@ -307,6 +307,8 @@ if Console.args.length == 0
 # if one argument, then act like grep
 else
     case Console.args[0]
+        when '-v', '--version'
+            puts "0.0.1"
         when '--help'
             help_command()
         when 'update'
