@@ -7,21 +7,44 @@ This is a quality-of-life tool for all software projects. It brings common sense
 
 # How do I install atk?
 
-### Windows 10
-run this command in CMD
+
+<details>
+  <summary><b>If you have Windows 10</b></summary>
+  <p>
+Run this command in CMD
+      
 ```
 powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring('https://git.io/fj7gT')" & RefreshEnv.cmd
 ```
 
-### Mac OS (Sierria or higher)
-run this command in the terminal
+  </p>
+</details>
+
+<details>
+  <summary><b>If you have MacOS</b></summary>
+  <p>
+Run this command in the terminal app
+      
 ```
 eval `curl -L git.io/fj7gv`
 ```
+      
+  </p>
+</details>
 
-### Linux
-Ubuntu
+
+<details>
+  <summary><b>If you have Linux</b></summary>
+  <p>
+
+## Ubuntu
+      
+Run this in your console
+      
 ```
 eval `wget -qO- git.io/fj7gk`
 ```
-More linux support coming soon.
+      
+#### More linux support hopefully coming soon.
+  </p>
+</details>
