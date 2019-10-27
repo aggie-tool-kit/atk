@@ -59,7 +59,7 @@ def project(args)
                 # commit everything
                 system('git', 'commit', '-m', message)
                 # pull down everything
-                system('git pull')
+                system('git pull --no-edit')
                 # push up everything
                 system('git push')
                 

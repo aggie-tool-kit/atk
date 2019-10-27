@@ -17,7 +17,6 @@ def help_command()
                 this command is used execute a remote script (normally for setup)
             examples: 
                 `atk run python`
-                `atk run python 3`
                 `atk run jeff-hykin/atk-python`
                 `atk run https://github.com/jeff-hykin/atk-python`
         
@@ -26,7 +25,6 @@ def help_command()
                 this command is used when you want to manually install a package
             examples: 
                 `atk install python`
-                `atk install python 3`
                 `atk install jeff-hykin/atk-python`
                 `atk install https://github.com/jeff-hykin/atk-python`
         
