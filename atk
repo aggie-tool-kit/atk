@@ -13,7 +13,6 @@ def help_command()
         atk #{"--help".green}
             info: shows avalible commands
         
-        
         atk #{"run".green} #{"<package>".blue}
             info:
                 this command is used execute a remote script (normally for setup)

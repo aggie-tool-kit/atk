@@ -6,13 +6,21 @@ end
 
 def help_command()
     puts <<-HEREDOC.remove_indent
-        project --help
-            this command, it displays the avalible tools
-        project init
-            this will create an info.yaml in your current directory
-            the info.yaml will contain all the standard project managment tools
-            in the future this command will be more interative
-        project run <name-of-command> <arg1-for-command> <arg2-for-command> <...etc>
+        project #{"--help".green}
+            info: displays the avalible tools
+        
+        project #{"init".green}
+            info:
+                this will create an info.yaml in your current directory
+                the info.yaml will contain all the standard project managment tools
+                in the future this command will be more interative
+
+        project #{"sync".green}
+            info:
+                adds, commits, and then pulls/pushes all git changes
+                if there is merge conflict, it will show up as normal
+        
+        project #{"run".green} #{"<name-of-command>".blue} #{"<arg1-for-command>".blue} #{"<arg2-for-command>".blue} #{"<...etc>".blue}
             this will read the local info.yaml of your project to find the commands
             if you use the `project init` command it will generate an info.yaml which 
             has examples of the commands. Commands can be console code, or ruby code.
@@ -37,6 +45,16 @@ def project(args)
                 Info.init
             when 'sync'
                 # if there is an argument
+                git_folder_path = FS.dirname(Info.source_path)/".git"
+                if not FS.is_folder(git_folder_path)
+                    raise <<-HEREDOC.remove_indent
+                        
+                        
+                        The `project sync` command was called inside of #{FS.dirname(Info.source_path)}
+                        However, there doesn't seem to be a git repository in this folder
+                        (and changes can't be saved/synced without a git repository)
+                    HEREDOC
+                end
                 message = args[1]
                 if message == nil
                     message = ""
