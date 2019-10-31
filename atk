@@ -12,6 +12,9 @@ def help_command()
     puts <<-HEREDOC.remove_indent
         atk #{"--help".green}
             info: shows avalible commands
+
+        atk #{"--version".green}
+            info: shows version
         
         atk #{"run".green} #{"<package>".blue}
             info:
@@ -324,6 +327,16 @@ else
             puts "0.0.1"
         when '--help'
             help_command()
+        when '--version'
+            # returns the version of the atk gem
+            # get all installed gems, filter for just atk
+            atk_gems = `gem list`.split("\n").select{|each| each.match(/atk_toolbox \(/) }[0]
+            # find all the versions of atk
+            versions = atk_gems.sub(/^atk_toolbox \((.*)\)/,'\1')
+            # sort them in order
+            versions = versions.split(",").map{|each| Version.new(each.strip) }.sort
+            # return the most up to date version
+            puts versions[-1]
         when 'update'
             if Console.args[1] == nil
                 if OS.is?('mac')
