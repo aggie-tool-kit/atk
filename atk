@@ -348,6 +348,11 @@ else
         when 'uninstall'
             # check to see if the package is installed, and check if it has an uninstaller
             not_yet_implemented()
+        when 'uninstall-atk'
+            # remove the 3 commands and the home folder
+            if Console.yes?("Are you sure you want to uninstall ATK?\nnote: packages/languages install via ATK will still be avalible after ATK is removed")
+                FS.delete()
+            end
         when 'new'
             not_yet_implemented()
             case Console.args[1]
