@@ -21,9 +21,10 @@ def help_command()
                 if there is merge conflict, it will show up as normal
         
         project #{"run".green} #{"<name-of-command>".blue} #{"<arg1-for-command>".blue} #{"<arg2-for-command>".blue} #{"<...etc>".blue}
-            this will read the local info.yaml of your project to find the commands
-            if you use the `project init` command it will generate an info.yaml which 
-            has examples of the commands. Commands can be console code, or ruby code.
+            info:
+                this will read the local info.yaml of your project to find commands
+                if you use the `project init` command it will generate an info.yaml which 
+                has example commands. Commands can be console code, or ruby code.
     HEREDOC
 end
 
