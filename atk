@@ -1,3 +1,4 @@
+#!/Users/jeffhykin/.rbenv/versions/2.5.5/bin/ruby
 require 'atk_toolbox'
 require 'digest'
 
@@ -9,10 +10,11 @@ end
 
 def help_command()
     puts <<-HEREDOC.remove_indent
-        atk --help
+        atk #{"--help".green}
             info: shows avalible commands
         
-        atk run <package> <version>
+        
+        atk #{"run".green} #{"<package>".blue}
             info:
                 this command is used execute a remote script (normally for setup)
             examples: 
@@ -20,7 +22,7 @@ def help_command()
                 `atk run jeff-hykin/atk-python`
                 `atk run https://github.com/jeff-hykin/atk-python`
         
-        atk install <package> <version>
+        atk #{"install".green} #{"<package>".blue} #{"<version>".blue}
             info:
                 this command is used when you want to manually install a package
             examples: 
@@ -28,10 +30,10 @@ def help_command()
                 `atk install jeff-hykin/atk-python`
                 `atk install https://github.com/jeff-hykin/atk-python`
         
-        atk update
+        atk #{"update".green}
             info: this will get you the latest version of the `atk`, `project`, and `_` commands
         
-        atk uninstall-atk
+        atk #{"uninstall-atk".green}
             info: this command will uninstall atk itself
     HEREDOC
 end
