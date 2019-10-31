@@ -30,6 +30,9 @@ def help_command()
         
         atk update
             info: this will get you the latest version of the `atk`, `project`, and `_` commands
+        
+        atk uninstall-atk
+            info: this command will uninstall atk itself
     HEREDOC
 end
 
@@ -351,7 +354,17 @@ else
         when 'uninstall-atk'
             # remove the 3 commands and the home folder
             if Console.yes?("Are you sure you want to uninstall ATK?\nnote: packages/languages install via ATK will still be avalible after ATK is removed")
-                FS.delete()
+                puts "Deleting the _ command"
+                FS.delete(FS.path_for('_'))
+                puts "Deleting the project command"
+                FS.delete(FS.path_for('project'))
+                puts "Deleting the atk command"
+                FS.delete(FS.path_for('atk'))
+                puts "Deleting the atk directory"
+                FS.delete(ATK.paths[:atk])
+                puts "Uninstalling the atk_toolbox ruby gem"
+                system 'gem uninstall atk_toolbox'
+                puts "\n Uninstall complete"
             end
         when 'new'
             not_yet_implemented()
