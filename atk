@@ -163,7 +163,17 @@ class PackageInstaller
         
         # verify the (install_command)
         if (not installer_info["(commands)"].is_a?(Hash)) || (not installer_info["(commands)"]["(run)"].is_a?(String))
-            raise "\n\nWhen loading the '#{@name}' installer\n    there was an info.yaml file in the root directory\n    however, the (install_command) wasn't a string\n    meaning I don't know what to do with it\n    the owner of the '#{@name}' installer needs to add an info.yaml\n    if you are the package owner, look at the official atk installers\n    you can find them on github to see examples of the info.yaml"
+            raise <<-HEREDOC.remove_indent
+                
+                
+                When loading the '#{@name}' installer
+                ✔️ there was an info.yaml file in the root directory
+                however when looking inside the info.yaml for
+                    (commands):
+                        (run): "should-be-a-command"
+                I didn't find a run command that was a string.
+                Because of that, I don't know what/how to run that package
+            HEREDOC
         else
             run_command = installer_info["(commands)"]["(run)"]
         end
