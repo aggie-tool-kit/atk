@@ -24,11 +24,13 @@ def help_command()
                 `atk run jeff-hykin/atk-python`
                 `atk run https://github.com/jeff-hykin/atk-python`
             
-        atk #{"clone".green} #{"<github-url>".blue}
+        atk #{"setup".green} #{"<github-url>".blue}
             info:
                 command for quickly setting up other people's projects
                 it downloads a github repo to the projects folder 
                 and runs the project (setup) function
+            examples:
+                `atk setup https://github.com/jeff-hykin/atk-python`
         
         atk #{"install".green} #{"<package>".blue} #{"<version>".blue}
             info:
@@ -377,7 +379,7 @@ else
             # recursively install packages
             PackageInstaller.install(installer_name, version)
             
-        when 'clone'
+        when 'setup'
             repo_url = Console.args[1]
             project_folder = ATK.info["project_folder"]
             # if there's a project folder
