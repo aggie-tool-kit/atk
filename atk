@@ -23,6 +23,12 @@ def help_command()
                 `atk run python`
                 `atk run jeff-hykin/atk-python`
                 `atk run https://github.com/jeff-hykin/atk-python`
+            
+        atk #{"clone".green} #{"<github-url>".blue}
+            info:
+                command for quickly setting up other people's projects
+                it downloads a github repo to the projects folder 
+                and runs the project (setup) function
         
         atk #{"install".green} #{"<package>".blue} #{"<version>".blue}
             info:
@@ -371,7 +377,26 @@ else
             # recursively install packages
             PackageInstaller.install(installer_name, version)
             
-            # once a package is found, save it locally and run it's installer
+        when 'clone'
+            repo_url = Console.args[1]
+            project_folder = ATK.info["project_folder"]
+            # if there's a project folder
+            if not project_folder
+                # then use the Desktop folder
+                project_folder = HOME/"Desktop"
+            end
+            project_name = Console.ask("What do you want to name the project?")
+            project_path = project_folder/project_name
+            ensure_cloned_and_up_to_date(project_path, repo_url)
+            FS.in_dir(project_path) do
+                setup_command = Info.project_commands['(setup)']
+                if setup_command.is_a?(String)
+                    puts "\n\nRunning (setup) command:\n".green
+                    sleep 1
+                    system setup_command
+                end
+            end
+            
         when 'uninstall'
             # check to see if the package is installed, and check if it has an uninstaller
             not_yet_implemented()
