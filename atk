@@ -10,10 +10,10 @@ end
 
 def help_command()
     puts <<-HEREDOC.remove_indent
-        atk #{"--help".green}
+        atk #{"help".green}
             info: shows avalible commands
 
-        atk #{"--version".green}
+        atk #{"version".green}
             info: shows version
         
         atk #{"run".green} #{"<package>".blue}
@@ -334,9 +334,9 @@ if Console.args.length == 0
 # if one argument, then act like grep
 else
     case Console.args[0]
-        when '-h', '--help'
+        when 'help', '--help', '-h'
             help_command()
-        when '-v', '--version'
+        when 'version', '--version', '-v'
             # returns the version of the atk gem
             # get all installed gems, filter for just atk
             atk_gems = `gem list`.split("\n").select{|each| each.match(/atk_toolbox \(/) }[0]
