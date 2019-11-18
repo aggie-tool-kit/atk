@@ -30,15 +30,8 @@ def help_command()
                 it downloads a github repo to the projects folder 
                 and runs the project (setup) function
             examples:
-                `atk setup https://github.com/jeff-hykin/atk-python`
-        
-        atk #{"install".green} #{"<package>".blue} #{"<version>".blue}
-            info:
-                this command is used when you want to manually install a package
-            examples: 
-                `atk install python`
                 `atk install jeff-hykin/atk-python`
-                `atk install https://github.com/jeff-hykin/atk-python`
+                `atk setup https://github.com/jeff-hykin/atk-python`
         
         atk #{"update".green}
             info: this will get you the latest version of the `atk`, `project`, and `_` commands
@@ -341,11 +334,9 @@ if Console.args.length == 0
 # if one argument, then act like grep
 else
     case Console.args[0]
-        when '-v', '--version'
-            puts "0.0.1"
-        when '--help'
+        when '-h', '--help'
             help_command()
-        when '--version'
+        when '-v', '--version'
             # returns the version of the atk gem
             # get all installed gems, filter for just atk
             atk_gems = `gem list`.split("\n").select{|each| each.match(/atk_toolbox \(/) }[0]
@@ -380,25 +371,8 @@ else
             PackageInstaller.install(installer_name, version)
             
         when 'setup'
-            repo_url = Console.args[1]
-            project_folder = ATK.info["project_folder"]
-            # if there's a project folder
-            if not project_folder
-                # then use the Desktop folder
-                project_folder = HOME/"Desktop"
-            end
-            project_name = Console.ask("What do you want to name the project?")
-            project_path = project_folder/project_name
-            ensure_cloned_and_up_to_date(project_path, repo_url)
-            FS.in_dir(project_path) do
-                setup_command = Info.project_commands['(setup)']
-                if setup_command.is_a?(String)
-                    puts "\n\nRunning (setup) command:\n".green
-                    sleep 1
-                    system setup_command
-                end
-            end
-            
+            command, repo_url, *arguments = Console.args
+            ATK.setup(repo_url, arguments)
         when 'uninstall'
             # check to see if the package is installed, and check if it has an uninstaller
             not_yet_implemented()
