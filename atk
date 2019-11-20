@@ -15,14 +15,17 @@ def help_command()
 
         atk #{"version".green}
             info: shows version
+            
+        atk #{"update".green}
+            info: this will get you the latest version of the #{'atk'.light_magenta}, #{'project'.light_magenta}, and #{'_'.light_magenta} commands            
         
         atk #{"run".green} #{"<package>".blue}
             info:
                 this command is used execute a remote script (normally for setup)
             examples: 
-                `atk run python`
-                `atk run jeff-hykin/atk-python`
-                `atk run https://github.com/jeff-hykin/atk-python`
+                #{'atk run python'.light_magenta}
+                #{'atk run jeff-hykin/atk-python'.light_magenta}
+                #{'atk run https://github.com/jeff-hykin/atk-python'.light_magenta}
             
         atk #{"setup".green} #{"<github-url>".blue}
             info:
@@ -30,11 +33,8 @@ def help_command()
                 it downloads a github repo to the projects folder 
                 and runs the project (setup) function
             examples:
-                `atk install jeff-hykin/atk-python`
-                `atk setup https://github.com/jeff-hykin/atk-python`
-        
-        atk #{"update".green}
-            info: this will get you the latest version of the `atk`, `project`, and `_` commands
+                #{'atk install jeff-hykin/atk-python'.light_magenta}
+                #{'atk setup https://github.com/jeff-hykin/atk-python'.light_magenta}
         
         atk #{"uninstall-atk".green}
             info: this command will uninstall atk itself

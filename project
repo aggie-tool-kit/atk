@@ -6,7 +6,7 @@ end
 
 def help_command()
     puts <<-HEREDOC.remove_indent
-        project #{"--help".green}
+        project #{"help".green}
             info: displays the avalible tools
         
         project #{"init".green}
@@ -25,6 +25,11 @@ def help_command()
                 this will read the local info.yaml of your project to find commands
                 if you use the `project init` command it will generate an info.yaml which 
                 has example commands. Commands can be console code, or ruby code.
+
+        project #{"commands".green}
+            info:
+                this will read the local info.yaml of your project to find commands
+                then it will list out each command with a short preview of the contents of that command
     HEREDOC
 end
 
@@ -32,7 +37,17 @@ end
 def project(args)
     # TODO: check to make sure project exists
     if args.length == 0
-        puts "This is part of ATK! I'm glad to see you're using it.\nRunning it with no arguments will just get you this message :)"
+        puts "if you don't know how to use #{"project".light_magenta} just run #{"project help".light_magenta}"
+        puts ""
+        # if there are commands then show them
+        begin
+            commands = Info.project_commands
+            if commands.is_a?(Hash) && commands.keys.size > 0
+                puts "commands for current project:"
+                puts `project commands`
+            end
+        rescue => exception
+        end
     else
         # 
         # Check dependencies
@@ -40,7 +55,7 @@ def project(args)
             # if they're not met, then warn the user about that
             # check a hash of the file to see if anything has changed
         case args[0]
-            when '--help'
+            when 'help', '--help', '-h'
                 help_command()
             when 'init'
                 Info.init
@@ -124,6 +139,16 @@ def project(args)
                         command.run(*command_args)
                     elsif command == nil
                         puts "I don't think that command is in the info.yaml file"
+                    end
+                end
+            when 'commands'
+                max_number_of_chars_to_show = 80
+                commands = Info.project_commands
+                if commands.keys.size == 0
+                    puts "0 avalible commands".blue
+                else
+                    for each_key, each_value in Info.project_commands
+                        puts "    #{each_key.to_s.green}: #{each_value.to_s.strip[0..max_number_of_chars_to_show].sub(/(.*)[\s\S]*/,'\1')}"
                     end
                 end
             else

@@ -1,2 +1,7 @@
 #!/usr/bin/ruby
-exec "project", "run", *ARGV
+if ARGV.size == 0
+    puts "avalible commands:"
+    exec "project", "commands"
+else
+    exec "project", "run", *ARGV
+end
