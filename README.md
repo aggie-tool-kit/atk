@@ -14,7 +14,7 @@ This is a quality-of-life tool for all software projects. It brings common sense
 Run this command in CMD
       
 ```
-powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring('https://git.io/fj7gT')" & RefreshEnv.cmd
+powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring('https://git.io/fj7gT')" & RefreshEnv.cmd && timeout 5 && exit
 ```
 
   </p>
