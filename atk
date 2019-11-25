@@ -10,34 +10,48 @@ end
 
 def help_command()
     puts <<-HEREDOC.remove_indent
-        atk #{"help".green}
-            info: shows avalible commands
+        #{"help".yellow}
+            #{"examples:".green} #{'atk help'.blue}
+            #{"info:".green} shows avalible commands
 
-        atk #{"version".green}
-            info: shows version
+        #{"version".yellow}
+            #{"examples:".green} #{'atk version'.blue}
+            #{"info:".green} shows the currently installed version
             
-        atk #{"update".green}
-            info: this will get you the latest version of the #{'atk'.light_magenta}, #{'project'.light_magenta}, and #{'_'.light_magenta} commands            
+        #{"update".yellow}
+            #{"examples:".green} #{'atk update'.blue}
+            #{"info:".green} this will get you the latest version of the #{'atk'.blue}, #{'project'.blue}, and #{'_'.blue} commands            
         
-        atk #{"run".green} #{"<package>".blue}
-            info:
-                this command is used execute a remote script (normally for setup)
-            examples: 
-                #{'atk run python'.light_magenta}
-                #{'atk run jeff-hykin/atk-python'.light_magenta}
-                #{'atk run https://github.com/jeff-hykin/atk-python'.light_magenta}
+        #{"run".yellow}
+            #{"examples:".green}
+                #{'atk run https://github.com/jeff-hykin/install-python'.blue}
+                #{'atk run jeff-hykin/install-python'.blue}
+            #{"info:".green}
+                This command is used execute a remote script (normally for setup)
+            #{"format:".green}
+                #{"atk".blue} #{"run".yellow} #{"<package>".cyan}
+            #{"arguments:".green}
+                #{"<package>".cyan} can be:
+                    - a URL to any online git repo such as:
+                        #{'https://github.com/jeff-hykin/install-python'.blue}
+                    - can also be just a github-username/repo-name such as:
+                        #{'jeff-hykin/install-python'.blue}
+
             
-        atk #{"setup".green} #{"<github-url>".blue}
-            info:
-                command for quickly setting up other people's projects
-                it downloads a github repo to the projects folder 
+        #{"setup".yellow}
+            #{"examples:".green}
+                #{'atk setup jeff-hykin/atk-python'.blue}
+                #{'atk setup https://github.com/jeff-hykin/atk-python'.blue}
+            #{"info:".green}
+                A command for quickly setting up other people's projects
+                It downloads a github repo to the projects folder
                 and runs the project (setup) function
-            examples:
-                #{'atk install jeff-hykin/atk-python'.light_magenta}
-                #{'atk setup https://github.com/jeff-hykin/atk-python'.light_magenta}
+            #{"format:".green}
+                #{"atk".blue} #{"setup".yellow} #{"<project-git-url>".cyan}
         
-        atk #{"uninstall-atk".green}
-            info: this command will uninstall atk itself
+        #{"uninstall".yellow}
+            #{"examples:".green} #{'atk uninstall'.blue}
+            #{"info:".green} this command will uninstall atk itself
     HEREDOC
 end
 
@@ -376,7 +390,7 @@ else
         when 'uninstall'
             # check to see if the package is installed, and check if it has an uninstaller
             not_yet_implemented()
-        when 'uninstall-atk'
+        when 'uninstall'
             # remove the 3 commands and the home folder
             if Console.yes?("Are you sure you want to uninstall ATK?\nnote: packages/languages install via ATK will still be avalible after ATK is removed")
                 puts "Deleting the _ command"

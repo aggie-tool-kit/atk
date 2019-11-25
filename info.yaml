@@ -1,0 +1,46 @@
+(using_atk_version): 1.0
+(project):
+    name: ATK
+    description: The Aggie Tool Kit, for automating all your project needs
+    
+    commands: &commands # if you dont know what the & means, see https://blog.daemonl.com/2016/02/yaml.html
+        open_local: !language/ruby |
+            require 'atk_toolbox'
+            if Console.has_command('code')
+                system 'code -r "$(which atk)"'
+                system 'code -r "$(which _)"'
+                system 'code -r "$(which project)"'
+            end
+    
+    paths: &paths
+        root: ./
+    
+    dependencies: &dependencies
+        atk: 0.0.1
+    
+    (advanced_setup):
+        (put_new_dependencies_under): [ '(project)', 'basic_info', 'dependencies' ]
+        # caveats for a specific OS
+        when(--os is 'mac'):
+            (project_commands):
+                <<: *commands
+            (dependencies):
+                <<: *dependencies
+            (paths):
+                <<: *paths
+                
+        when(--os is 'windows'):
+            (project_commands):
+                <<: *commands
+            (dependencies):
+                <<: *dependencies
+            (paths):
+                <<: *paths
+                
+        when(--os is 'linux'):
+            (project_commands):
+                <<: *commands
+            (dependencies):
+                <<: *dependencies
+            (paths):
+                <<: *paths

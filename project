@@ -6,29 +6,47 @@ end
 
 def help_command()
     puts <<-HEREDOC.remove_indent
-        project #{"help".green}
-            info: displays the avalible tools
+        #{"help".yellow}
+            #{"info:".green} displays the avalible tools
+            #{"examples:".green} #{'project help'.blue}
         
-        project #{"init".green}
-            info:
-                this will create an info.yaml in your current directory
-                the info.yaml will contain all the standard project managment tools
-                in the future this command will be more interative
+        #{"initialize".yellow}
+            #{"examples:".green}
+                #{'project init'.blue}
+                #{'project initialize'.blue}
+            #{"info:".green}
+                This will create an info.yaml in your current directory
+                The info.yaml will contain all the standard project managment tools
+                In the future this command will be more interactive
 
-        project #{"sync".green}
-            info:
-                adds, commits, and then pulls/pushes all git changes
-                if there is merge conflict, it will show up as normal
+        #{"synchronize".yellow}
+            #{"examples:".green}
+                #{'project sync'.blue}
+                #{'project synchronize'.blue}
+                #{'project synchronize --message=\'updated the readme\''.blue}
+            #{"info:".green}
+                Adds, commits, and then pulls/pushes all git changes
+                If there is merge conflict, it will show up as normal
+            #{"format:".green}
+                #{"project".blue} #{"synchronize".yellow} #{"<package>".cyan} #{"--message='your message'".light_magenta}
         
-        project #{"run".green} #{"<name-of-command>".blue} #{"<arg1-for-command>".blue} #{"<arg2-for-command>".blue} #{"<...etc>".blue}
-            info:
-                this will read the local info.yaml of your project to find commands
-                if you use the `project init` command it will generate an info.yaml which 
-                has example commands. Commands can be console code, or ruby code.
+        #{"execute".yellow} 
+            #{"examples:".green}
+                #{'project execute compile'.blue}
+                #{'project exec compile'.blue}
+                #{'project exec main'.blue}
+                #{'project exec server'.blue}
+            #{"info:".green}
+                This will look at the info.yaml file in your project to find commands
+                You can use the `project init` command to generate an info.yaml which 
+                has example commands. Commands can be CMD/terminal/console commands, or ruby code.
+            #{"format:".green}
+                #{"project".blue} #{"execute".yellow} #{"<name-of-command>".cyan} #{"<arg1-for-command>".light_magenta} #{"<arg2-for-command>".light_magenta} #{"<...etc>".light_magenta}
 
-        project #{"commands".green}
-            info:
-                this will read the local info.yaml of your project to find commands
+        #{"commands".yellow}
+            #{"examples:".green} #{'project commands'.blue}
+            #{"info:".green}
+                This will read the local info.yaml of your project to find commands
                 then it will list out each command with a short preview of the contents of that command
     HEREDOC
 end
@@ -37,7 +55,7 @@ end
 def project(args)
     # TODO: check to make sure project exists
     if args.length == 0
-        puts "if you don't know how to use #{"project".light_magenta} just run #{"project help".light_magenta}"
+        puts "if you don't know how to use #{"project".blue} just run #{"project help".blue}"
         puts ""
         # if there are commands then show them
         begin
@@ -57,9 +75,9 @@ def project(args)
         case args[0]
             when 'help', '--help', '-h'
                 help_command()
-            when 'init'
+            when 'initialize', 'init'
                 Info.init
-            when 'sync'
+            when 'synchronize', 'sync'
                 # if there is an argument
                 git_folder_path = FS.dirname(Info.source_path)/".git"
                 if not FS.is_folder(git_folder_path)
@@ -121,11 +139,7 @@ def project(args)
                 package = args[1]
                 # check if there is an local_package_manager in the info.yaml
                 # if it does use it to remove the package
-            when 'obliterate-local-dependencies'
-                not_yet_implemented()
-                # check if there is an local_package_manager in the info.yaml
-                # if there is then use it to figure out which files to remove
-            when 'run'
+            when 'execute', 'exec'
                 # extract the (project_commands) section from the info.yaml, 
                 # then find the command with the same name as args[1] and run it
                 # TODO: use https://github.com/piotrmurach/tty-markdown#ttymarkdown- to highlight the ruby code 
@@ -145,10 +159,10 @@ def project(args)
                 max_number_of_chars_to_show = 80
                 commands = Info.project_commands
                 if commands.keys.size == 0
-                    puts "0 avalible commands".blue
+                    puts "0 avalible commands".cyan
                 else
                     for each_key, each_value in Info.project_commands
-                        puts "    #{each_key.to_s.green}: #{each_value.to_s.strip[0..max_number_of_chars_to_show].sub(/(.*)[\s\S]*/,'\1')}"
+                        puts "    #{each_key.to_s.yellow}: #{each_value.to_s.strip[0..max_number_of_chars_to_show].sub(/(.*)[\s\S]*/,'\1')}"
                     end
                 end
             else
