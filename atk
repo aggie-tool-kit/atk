@@ -1,8 +1,5 @@
-#!/Users/jeffhykin/.rbenv/versions/2.5.5/bin/ruby
 require 'atk_toolbox'
 require 'digest'
-
-# TODO: add a "strict" install option that installs all of the exact versions of everything, and throws an error if that is impossible
 
 def not_yet_implemented()
     puts "Sorry, this feature is still under development"
@@ -86,7 +83,7 @@ class PackageInstaller
     def initialize(name)
         # This function update/download the installer for a particular package and adds it's dependencies to all of the relevant locations
     
-        @name = PackageInstaller.simplify_name(name)
+        @name = ATK.simplify_name(name)
         # setting the name, effectively also sets self.folder_name
         
         # make sure all of them exist
@@ -135,7 +132,7 @@ class PackageInstaller
     
     def repo_url
         if @repo_url == nil
-            @repo_url = PackageInstaller.get_repo_url(@name)
+            @repo_url = ATK.package_name_to_url(@name)
         end
         return @repo_url
     end
@@ -207,7 +204,7 @@ class PackageInstaller
     end
     
     def self.get_folder_name(source)
-        source = PackageInstaller.simplify_name(source)
+        source = ATK.simplify_name(source)
         # if its a core or approved package
         if PackageInstaller.is_core_repo?(source)
             # the name is just the source
@@ -215,49 +212,17 @@ class PackageInstaller
         # if its a url
         else
             # use an MD5 hash of the url as the name
-            return Digest::MD5.hexdigest(PackageInstaller.get_repo_url(source))
+            return Digest::MD5.hexdigest(ATK.package_name_to_url(source))
         end
     end
     
-    def self.simplify_name(source)
-        source = source.strip
-        # if its starts with "atk/", just remove that part
-        source = source.sub( /^atk\//, "" )
-        # if it starts with "https://github.com/", just remove that part
-        source = source.sub( /^https:\/\/github.com\//, "" )
-        return source
-    end
-    
     def self.is_core_repo?(source)
-        source = PackageInstaller.simplify_name(source)
+        source = ATK.simplify_name(source)
         # if the package name does not have a slash in it, then assume it is a core / approved installer
         if not (source =~ /.*\/.*/)
             return true
         else
             return false
-        end
-    end
-    
-    def self.get_repo_url(installer_name)
-        # if its starts with "atk/", just remove that part
-        installer_name = PackageInstaller.simplify_name(installer_name)
-        # if the package name does not have a slash in it, then assume it is a core / approved installer
-        if PackageInstaller.is_core_repo?(installer_name)
-            path_to_core_listing = ATK.paths[:core_yaml]
-            core = YAML.load_file(path_to_core_listing)
-            if core[installer_name] == nil
-                puts "I don't see that package in the core, let me make sure I have the latest info"
-                download("https://raw.githubusercontent.com/aggie-tool-kit/atk/master/interface/core.yaml", as: path_to_core_listing)
-                core = YAML.load_file(path_to_core_listing)
-            end
-            if core[installer_name] != nil
-                repo_url = core[installer_name]["source"]
-            else
-                raise "That package doesn't seem to be a core package"
-            end
-        # if it does have a slash, then assume its a github repo
-        else
-            repo_url = "https://github.com/"+installer_name
         end
     end
     
