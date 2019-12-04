@@ -12,6 +12,9 @@
                 system 'code -r "$(which project)"'
             end
     
+    example issues atk fixes:
+        - having python3 bound to python 3.8, but having pip3 bound to python3.7 
+    
     paths: &paths
         root: ./
     
