@@ -336,19 +336,8 @@ else
                 end
             end
         when 'run'
-            installer_name = Console.args[1]
-            # TODO: split up the package name from the version
-            version = nil
-            
-            # check for an internet connection
-            if not online?()
-                puts "\n\nIt seems like you're not online at the moment so I can't run anything"
-                return
-            end
-            
-            # recursively install packages
-            PackageInstaller.install(installer_name, version)
-            
+            package, *args = Console.args
+            Atk.run(package, args)
         when 'setup'
             command, repo_url, *arguments = Console.args
             Atk.setup(repo_url, arguments)
