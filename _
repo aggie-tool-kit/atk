@@ -1,7 +1,8 @@
-#!/usr/bin/ruby
+# only require the project command, not the entire ATK toolbox
+require File.dirname(Gem.find_latest_files('atk_toolbox')[0])+"/atk/commands/project"
 if ARGV.size == 0
     puts "avalible commands:"
-    exec "project", "commands"
+    ATK.project(["commands"])
 else
-    exec "project", "execute", *ARGV
+    ATK.project(["execute", *ARGV])
 end
