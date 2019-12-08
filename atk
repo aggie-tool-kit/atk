@@ -37,8 +37,8 @@ def help_command()
             
         #{"setup".yellow}
             #{"examples:".green}
-                #{'atk setup jeff-hykin/install-python'.blue}
-                #{'atk setup https://github.com/jeff-hykin/install-python'.blue}
+                #{'atk setup jeff-hykin/atk-python'.blue}
+                #{'atk setup https://github.com/jeff-hykin/atk-python'.blue}
             #{"info:".green}
                 A command for quickly setting up other people's projects
                 It downloads a github repo to the projects folder
@@ -332,7 +332,7 @@ else
                 elsif OS.is?('linux')
                     -'eval `wget -qO- git.io/fj7gk`'
                 else
-                    -'powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring(\'https://git.io/fj7gT\')" & RefreshEnv.cmd'
+                    -'powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring("https://git.io/fj7gT")" & ___AtkPrintDone.bat & exit'
                 end
             end
         when 'run'
