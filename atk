@@ -78,12 +78,12 @@ class PackageInstaller
     @dependencies = {}
     
     @@installations_on_deck = {}
-    @@installers_info = YAML.load_file(ATK.paths[:installed_yaml])
+    @@installers_info = YAML.load_file(Atk.paths[:installed_yaml])
     
     def initialize(name)
         # This function update/download the installer for a particular package and adds it's dependencies to all of the relevant locations
     
-        @name = ATK.simplify_name(name)
+        @name = AtkPackage.new(name).simple_name
         # setting the name, effectively also sets self.folder_name
         
         # make sure all of them exist
@@ -109,7 +109,7 @@ class PackageInstaller
         @@installers_info["downloaded"][self.folder_name] = { source: self.repo_url() }
         
         # save any changes
-        FS.write(@@installers_info.to_yaml, to: ATK.paths[:installed_yaml])
+        FS.write(@@installers_info.to_yaml, to: Atk.paths[:installed_yaml])
     end
     
     def folder_name
@@ -127,18 +127,18 @@ class PackageInstaller
         @@installers_info["installed"][self.folder_name] ||= {}
         @@installers_info["installed"][self.folder_name]["version"] = version
         # save any changes
-        FS.write(@@installers_info.to_yaml, to: ATK.paths[:installed_yaml])
+        FS.write(@@installers_info.to_yaml, to: Atk.paths[:installed_yaml])
     end
     
     def repo_url
         if @repo_url == nil
-            @repo_url = ATK.package_name_to_url(@name)
+            @repo_url = AtkPackage.new(@name).url
         end
         return @repo_url
     end
 
     def path
-        ATK.paths[:installers_folder]/self.folder_name
+        Atk.paths[:installers_folder]/self.folder_name
     end
 
     def parse_installer_info
@@ -204,7 +204,7 @@ class PackageInstaller
     end
     
     def self.get_folder_name(source)
-        source = ATK.simplify_name(source)
+        source = AtkPackage.new(source).simple_name
         # if its a core or approved package
         if PackageInstaller.is_core_repo?(source)
             # the name is just the source
@@ -212,12 +212,12 @@ class PackageInstaller
         # if its a url
         else
             # use an MD5 hash of the url as the name
-            return Digest::MD5.hexdigest(ATK.package_name_to_url(source))
+            return Digest::MD5.hexdigest(AtkPackage.new(source).url)
         end
     end
     
     def self.is_core_repo?(source)
-        source = ATK.simplify_name(source)
+        source = AtkPackage.new(source).simple_name
         # if the package name does not have a slash in it, then assume it is a core / approved installer
         if not (source =~ /.*\/.*/)
             return true
@@ -342,7 +342,7 @@ else
             
             # check for an internet connection
             if not online?()
-                puts "\n\nIt seems like you're not online at the moment so I can't install anything"
+                puts "\n\nIt seems like you're not online at the moment so I can't run anything"
                 return
             end
             
@@ -351,7 +351,7 @@ else
             
         when 'setup'
             command, repo_url, *arguments = Console.args
-            ATK.setup(repo_url, arguments)
+            Atk.setup(repo_url, arguments)
         when 'uninstall'
             # check to see if the package is installed, and check if it has an uninstaller
             not_yet_implemented()
@@ -365,7 +365,7 @@ else
                 puts "Deleting the atk command"
                 FS.delete(FS.path_for('atk'))
                 puts "Deleting the atk directory"
-                FS.delete(ATK.paths[:atk])
+                FS.delete(Atk.paths[:atk])
                 puts "Uninstalling the atk_toolbox ruby gem"
                 system 'gem uninstall atk_toolbox'
                 puts "\n Uninstall complete"

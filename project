@@ -1,4 +1,4 @@
 # only require the project command, not the entire ATK toolbox
 require File.dirname(Gem.find_latest_files('atk_toolbox')[0])+"/atk/commands/project"
 # run the project command with the current 
-ATK.project(Console.args)
+Atk.project(Console.args)
