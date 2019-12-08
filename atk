@@ -37,8 +37,8 @@ def help_command()
             
         #{"setup".yellow}
             #{"examples:".green}
-                #{'atk setup jeff-hykin/atk-python'.blue}
-                #{'atk setup https://github.com/jeff-hykin/atk-python'.blue}
+                #{'atk setup jeff-hykin/install-python'.blue}
+                #{'atk setup https://github.com/jeff-hykin/install-python'.blue}
             #{"info:".green}
                 A command for quickly setting up other people's projects
                 It downloads a github repo to the projects folder
