@@ -336,7 +336,7 @@ else
                 end
             end
         when 'run'
-            package, *args = Console.args
+            command, package, *args = Console.args
             Atk.run(package, args)
         when 'setup'
             command, repo_url, *arguments = Console.args
