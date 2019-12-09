@@ -77,7 +77,7 @@ else
                 elsif OS.is?('linux')
                     -'eval `wget -qO- git.io/fj7gk`'
                 else
-                    -'powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring(\'https://git.io/fj7gT\')" & ___AtkPrintDone.bat & exit'
+                    -'powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring(\'https://git.io/fj7gT\')"'
                 end
             end
         when 'run'
