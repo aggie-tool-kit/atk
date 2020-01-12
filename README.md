@@ -14,7 +14,7 @@ This is a quality-of-life tool for all software projects. It brings common sense
 Run this command in CMD
       
 ```
-powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring('https://git.io/fj7gT')" & ___AtkPrintDone.bat & exit
+powershell -command "Set-ExecutionPolicy RemoteSigned -scope CurrentUser; iex (new-object net.webclient).downloadstring('https://git.io/fj7gT')" & ___AtkPrintDone.bat
 ```
 
   </p>
